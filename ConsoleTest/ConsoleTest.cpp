@@ -8,13 +8,7 @@ using namespace std;
 
 void edit_tag(CFlvTag *tag)
 {
-// 	if (tag->Get_tag_type() != TAG_TYPE_VIDEO)
-// 	{
-// 		return;
-// 	}
-
-	UINT32 timestame = tag->Get_tag_timestamp_ext() & 0x00FFFFFF;
-	tag->Set_tag_timestamp(timestame / 2);
+	return;
 }
 
 int main(int argc, char **argv)
