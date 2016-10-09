@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="0.Project">
+      <UniqueIdentifier>{9a6203c6-bd88-42bd-be85-f4fac511b0dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="1.Global">
+      <UniqueIdentifier>{3d5ca5fe-dfc4-4a1d-9d73-673ce509f8af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2.Lib">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="3.File">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="4.Tag">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ParserLib.h">
+      <Filter>2.Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="FlvBody.h">
+      <Filter>3.File</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>0.Project</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>0.Project</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalUtils.h">
+      <Filter>1.Global</Filter>
+    </ClInclude>
+    <ClInclude Include="Configuration.h">
+      <Filter>1.Global</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ParserLib.cpp">
+      <Filter>2.Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="FlvBody.cpp">
+      <Filter>3.File</Filter>
+    </ClCompile>
+    <ClCompile Include="FlvTag.cpp">
+      <Filter>4.Tag</Filter>
+    </ClCompile>
+    <ClCompile Include="WriterLib.cpp">
+      <Filter>2.Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>0.Project</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>0.Project</Filter>
+    </ClCompile>
+    <ClCompile Include="GlobalUtils.cpp">
+      <Filter>1.Global</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoTag.cpp">
+      <Filter>4.Tag</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
