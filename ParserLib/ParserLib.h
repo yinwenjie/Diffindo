@@ -65,6 +65,7 @@ class CFlvBody;
 
 // Flv tag structure...
 class VideoTag;
+class AudioTag;
 class PARSERLIB_API CFlvTag
 {
 public:
@@ -102,6 +103,7 @@ private:
 	BYTE*	m_tagDataBuf;
 
 	VideoTag *m_videoTag;
+	AudioTag *m_audioTag;
 };
 
 // Flv parsing core class...
@@ -146,6 +148,15 @@ typedef struct VideoTagHeader
 	UINT8 AVPacketType;
 	int	  compositionTime;
 } VideoTagHeader;
+
+typedef struct AudioTagHeader
+{
+	UINT8 soundFormat;
+	UINT8 soundRate;
+	bool  soundSize;
+	bool  soundType;
+	UINT8 AACPacketType;
+} AudioTagHeader;
 
 typedef struct NALUnitsBuffer
 {
@@ -217,6 +228,24 @@ private:
 	int parse_nal_unit();
 	void dump_nal_info();
 };
+
+class PARSERLIB_API AudioTag
+{
+public:
+	AudioTag(BYTE *dataBuf, UINT32 dataSize);
+	~AudioTag();
+
+	AudioTagHeader *m_audioTagHeader;
+
+	int Parse();
+
+private:
+	BYTE *m_dataBuffer;
+	UINT32 m_dataSize;
+
+	int get_audio_tag_header();
+};
+
 
 typedef void(*pTag_buf_edit_callback)(CFlvTag *tag);
 

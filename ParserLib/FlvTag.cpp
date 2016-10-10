@@ -80,6 +80,15 @@ int CFlvTag::Parse_detail()
 			return err;
 		}
 	}
+	else if (m_tagType == TAG_TYPE_AUDIO)
+	{
+		m_audioTag = new AudioTag(m_tagDataBuf, m_dataSize);
+		err = m_audioTag->Parse();
+		if (err < 0)
+		{
+			return err;
+		}
+	}
 	return kFlvParserError_NoError;
 }
 
