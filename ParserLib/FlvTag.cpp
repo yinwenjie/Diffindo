@@ -117,6 +117,13 @@ void CFlvTag::Dump_tag_info()
 	}
 #endif
 
+#if DUMP_AUDIO_TAG_INFO_ENABLED_LOG
+	if (m_audioTag)
+	{
+		m_audioTag->Dump_audio_tag_info();
+	}
+#endif
+
 }
 
 UINT8 CFlvTag::Get_tag_type()

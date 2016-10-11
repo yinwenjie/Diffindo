@@ -229,6 +229,25 @@ private:
 	void dump_nal_info();
 };
 
+class AudioSpecificConfig
+{
+public:
+	AudioSpecificConfig(BYTE *dataBuf);
+	~AudioSpecificConfig();
+
+	int Parse();
+	void Dump_audio_speci_config();
+
+private:
+	BYTE *m_dataBuf;
+
+	UINT8 m_audioObjectType;
+	UINT8 m_samplingFrequencyIndex;
+	UINT32 m_samplingFrequency;
+	UINT8 m_channelConfiguration;
+};
+
+
 class PARSERLIB_API AudioTag
 {
 public:
@@ -236,8 +255,10 @@ public:
 	~AudioTag();
 
 	AudioTagHeader *m_audioTagHeader;
+	AudioSpecificConfig *m_audioSpecCfg;
 
 	int Parse();
+	void Dump_audio_tag_info();
 
 private:
 	BYTE *m_dataBuffer;
