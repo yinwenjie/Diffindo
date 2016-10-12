@@ -7,15 +7,7 @@
 
 using namespace std;
 
-// This is an example of an exported variable
-PARSERLIB_API int nParserLib=0;
-
-// This is an example of an exported function.
-PARSERLIB_API int fnParserLib(void)
-{
-    return 42;
-}
-
+// Flv parsing error description...
 PARSERLIB_API const char* errorHints[17] = 
 {
 	NULL,

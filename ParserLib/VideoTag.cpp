@@ -127,7 +127,7 @@ int VideoTag::Parse()
 {
 	int err = 0;
 	m_videoTagHeader = new VideoTagHeader;
-	err = get_video_tag_header();
+	err = create_video_tag_header();
 	if (err < 0)
 	{
 		return err;
@@ -202,7 +202,7 @@ BYTE * VideoTag::Get_pps_buf_with_len(UINT16 &ppsLen)
 	return m_decoderConfigRecord->Get_pps_buf();
 }
 
-int VideoTag::get_video_tag_header()
+int VideoTag::create_video_tag_header()
 {
 	int err = 0;
 	UINT8 buf = m_dataBuffer[0];
