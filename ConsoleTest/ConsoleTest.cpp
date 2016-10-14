@@ -24,9 +24,9 @@ void edit_tag(CFlvTag *tag)
 			audioIdx++;
 			return;
 		}
-		double actualTime = (audioIdx - 1) * 1024000.0 / 22050.0;
+		double actualTime = (audioIdx - 1) * 1024000.0 / 44100.0;
 		timeline << "Audio Idx: " << audioIdx++ << endl;
-		timeline << "Time Stamp: " << to_string(tag->Get_tag_timestamp_ext()) << endl;
+		timeline << "Time Stamp:  " << to_string(tag->Get_tag_timestamp_ext()) << endl;
 		timeline << "Actual Time: " << to_string(actualTime) << endl;
 	}
 	return;
@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 		cout << argv[1] <<" : " << errorHints[-err] << endl;
 		return -1;
 	}
-
+	
 	timeline.open("timeline.txt");
 	timeline << argv[1] << endl;
 
@@ -53,8 +53,8 @@ int main(int argc, char **argv)
 		return -1;
 	}
 //	writer.Clone_FLV_with_video();
-	writer.Create_FLV_with_edited_tag(edit_tag);
-//	writer.Extract_tags_with_range(0, 10000);
+//	writer.Create_FLV_with_edited_tag(edit_tag);
+	writer.Extract_tags_with_range(10, 1778);
 
 	timeline.close();
 

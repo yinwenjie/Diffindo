@@ -208,10 +208,10 @@ int VideoTag::create_video_tag_header()
 	UINT8 buf = m_dataBuffer[0];
 	m_videoTagHeader->frameType = (buf & 0xF0) >> 4;
 	m_videoTagHeader->codecID = (buf & 0x0F);
-	if (m_videoTagHeader->codecID != 7)
-	{
-		return kFlvParserError_UnsupportedCodec;
-	}
+// 	if (m_videoTagHeader->codecID != 7)
+// 	{
+// 		return kFlvParserError_UnsupportedCodec;
+// 	}
 	m_videoTagHeader->AVPacketType = m_dataBuffer[1];
 
 	UINT32 compTime = 0;

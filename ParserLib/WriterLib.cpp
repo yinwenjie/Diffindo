@@ -97,7 +97,7 @@ int CFlvWriter::Extract_tags_with_range(UINT32 startIdx, UINT32 endIdx)
 
 	while (tag)
 	{
-		if ((tag->Get_tag_index() < startIdx) && (tag->Get_tag_type() != TAG_TYPE_SCRIPT))
+		if ((tag->Get_tag_index() < startIdx)/* && (tag->Get_tag_type() != TAG_TYPE_SCRIPT)*/)
 		{
 			tag = tag->m_nextTag;
 			continue;
@@ -107,7 +107,7 @@ int CFlvWriter::Extract_tags_with_range(UINT32 startIdx, UINT32 endIdx)
 
 		tag = tag->m_nextTag;
 
-		if (tag->Get_tag_index() > endIdx)
+		if (!tag || (tag->Get_tag_index() > endIdx))
 		{
 			break;
 		}
