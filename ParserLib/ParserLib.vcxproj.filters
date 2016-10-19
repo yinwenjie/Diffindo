@@ -71,5 +71,8 @@
     <ClCompile Include="AudioTag.cpp">
       <Filter>4.Tag</Filter>
     </ClCompile>
+    <ClCompile Include="ScriptTag.cpp">
+      <Filter>4.Tag</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

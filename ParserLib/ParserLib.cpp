@@ -8,7 +8,7 @@
 using namespace std;
 
 // Flv parsing error description...
-PARSERLIB_API const char* errorHints[17] = 
+PARSERLIB_API const char* errorHints[18] = 
 {
 	NULL,
 	"Error: input file name should not be empty",
@@ -26,7 +26,8 @@ PARSERLIB_API const char* errorHints[17] =
 	"Error: Multiple PPS in Decoder Configuration not supported",
 	"Error: Cannot find SPS or PPS in Decoder Configuration",
 	"Error: NALU header length illegal, should only be 1, 2 or 4",
-	"Error: Multiple slice in frame not supported"
+	"Error: Multiple slice in frame not supported",
+	"Error: Illegal script value type"
 };
 
 // Constructor

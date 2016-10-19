@@ -25,6 +25,24 @@ CFlvTag::~CFlvTag()
 	{
 		delete[] m_tagDataBuf;
 	}
+
+	if (m_videoTag)
+	{
+		delete m_videoTag;
+		m_videoTag = NULL;
+	}
+
+	if (m_audioTag)
+	{
+		delete m_audioTag;
+		m_audioTag = NULL;
+	}
+
+	if (m_scriptTag)
+	{
+		delete m_scriptTag;
+		m_scriptTag = NULL;
+	}
 }
 
 int CFlvTag::Parse(UINT64 &byteCnt)
@@ -89,6 +107,16 @@ int CFlvTag::Parse_detail()
 			return err;
 		}
 	}
+	else if (m_tagType == TAG_TYPE_SCRIPT)
+	{
+		m_scriptTag = new ScriptTag(m_tagDataBuf, m_dataSize);
+		err = m_scriptTag->Parse();
+		if (err < 0)
+		{
+			return err;
+		}
+	}
+	
 	return kFlvParserError_NoError;
 }
 

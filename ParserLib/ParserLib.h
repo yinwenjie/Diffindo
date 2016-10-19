@@ -36,9 +36,10 @@ const int kFlvParserError_MultiplePictureParamaterSets = -13;
 const int kFlvParserError_NoSPSorPPSExists = -14;
 const int kFlvParserError_IllegalNALUHeaderLen = -15;
 const int kFlvParserError_MultipleSliceInFrame = -16;
+const int kFlvParserError_IllegalScriptValueType = -17;
 
 // Flv parsing error description...
-extern PARSERLIB_API const char* errorHints[17];
+extern PARSERLIB_API const char* errorHints[18];
 
 // Flv header structure
 typedef struct _tFlvHeader
@@ -60,6 +61,7 @@ class CFlvBody;
 // Flv tag structure...
 class VideoTag;
 class AudioTag;
+class ScriptTag;
 class PARSERLIB_API CFlvTag
 {
 public:
@@ -111,6 +113,7 @@ private:
 
 	VideoTag *m_videoTag;			//point of VideoTag object
 	AudioTag *m_audioTag;			//point of AudioTag object
+	ScriptTag *m_scriptTag;			//point of ScriptTag object
 };
 
 // Flv parsing core class...
@@ -298,6 +301,23 @@ private:
 	int get_audio_tag_header();
 };
 
+// ScriptTag class
+class CScriptDataValue;
+class PARSERLIB_API ScriptTag
+{
+public:
+	ScriptTag(BYTE *dataBuf, UINT32 dataSize);
+	~ScriptTag();
+
+	// Parse Script tag from bit stream
+	int Parse();
+
+private:
+	BYTE *m_dataBuffer;
+	UINT32 m_dataSize;
+
+	CScriptDataValue *m_scriptName;
+};
 
 typedef void(*pTag_buf_edit_callback)(CFlvTag *tag);
 
