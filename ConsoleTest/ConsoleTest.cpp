@@ -8,14 +8,43 @@ using namespace std;
 
 ofstream timeline;
 int videoIdx = 0, audioIdx = 0;
+double videoFrameGap = 1000.0 / 23.985, audioTagDuration = 1024000.0 / 22050.0;
+UINT32 lastVideoTimeStamp = 0, lastAudioTimeStamp = 0;
+bool lastTagAudio = false;
 
 void edit_tag(CFlvTag *tag)
 {
+	if (tag->Get_tag_index() <= 5000)
+	{
+		if (tag->Get_tag_type() == TAG_TYPE_VIDEO)
+		{
+			lastVideoTimeStamp = tag->Get_tag_timestamp_ext();
+		}
+		else if (tag->Get_tag_type() == TAG_TYPE_AUDIO)
+		{
+			lastAudioTimeStamp = tag->Get_tag_timestamp_ext();
+		}
+
+		return;
+	}
+
 	timeline << "-----------------------------" << endl;
 	if (tag->Get_tag_type() == TAG_TYPE_VIDEO)
 	{
 		timeline << "Video Idx: " << videoIdx++ << endl;
 		timeline << "Time Stamp: " << to_string(tag->Get_tag_timestamp_ext())<< endl;
+
+		if (lastTagAudio)
+		{
+			tag->Set_tag_timestamp((UINT32)lastAudioTimeStamp + 15);
+		}
+		else
+		{
+			UINT32 thisTimeStamp = ((lastVideoTimeStamp + videoFrameGap) < (lastAudioTimeStamp + audioTagDuration)) ? (lastVideoTimeStamp + videoFrameGap) : (lastAudioTimeStamp + audioTagDuration);
+			tag->Set_tag_timestamp(thisTimeStamp);
+		}
+		lastVideoTimeStamp = tag->Get_tag_timestamp_ext();
+		lastTagAudio = false;
 	}
 	else if (tag->Get_tag_type() == TAG_TYPE_AUDIO)
 	{
@@ -27,9 +56,12 @@ void edit_tag(CFlvTag *tag)
 		double actualTime = (audioIdx - 1) * 1024000.0 / 22050.0;
 		timeline << "Audio Idx: " << audioIdx++ << endl;
 		timeline << "Time Stamp:  " << to_string(tag->Get_tag_timestamp_ext()) << endl;
-		timeline << "Actual Time: " << to_string(actualTime) << endl;
+//		timeline << "Actual Time: " << to_string(actualTime) << endl;
 
-		tag->Set_tag_timestamp((UINT32)actualTime);
+//		tag->Set_tag_timestamp((UINT32)actualTime);
+
+		lastAudioTimeStamp = tag->Get_tag_timestamp_ext();
+		lastTagAudio = true;
 	}
 	return;
 }
