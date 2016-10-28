@@ -77,6 +77,8 @@ int main(int argc, char **argv)
 		return -1;
 	}
 	
+	return 0;
+
 	timeline.open("timeline.txt");
 	timeline << argv[1] << endl;
 

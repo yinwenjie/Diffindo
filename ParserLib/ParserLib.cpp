@@ -54,6 +54,18 @@ CFlvParser::~CFlvParser()
 		m_fileBuf = NULL;
 	}
 
+	if (m_flvHeader)
+	{
+		delete m_flvHeader;
+		m_flvHeader = NULL;
+	}
+
+	if (m_flvBody)
+	{
+		delete m_flvBody;
+		m_flvBody = NULL;
+	}
+
 #if DUMP_TAG_INFO_ENABLED_LOG
 	g_logoutFile.close();
 #endif
