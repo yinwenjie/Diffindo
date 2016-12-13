@@ -11,15 +11,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\FLVParserLib\src\Configuration.h" />
-    <ClInclude Include="..\FLVParserLib\src\DataTypes.h" />
-    <ClInclude Include="..\FLVParserLib\src\FLVParserLib.h" />
-    <ClInclude Include="..\FLVParserLib\src\GlobalUtils.h" />
-    <ClInclude Include="..\FLVParserLib\src\Include.h" />
+    <ClInclude Include="..\..\FLVParserLib\src\Configuration.h" />
+    <ClInclude Include="..\..\FLVParserLib\src\DataTypes.h" />
+    <ClInclude Include="..\..\FLVParserLib\src\FLVParserLib.h" />
+    <ClInclude Include="..\..\FLVParserLib\src\GlobalUtils.h" />
+    <ClInclude Include="..\..\FLVParserLib\src\Include.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\FLVParserLib\src\FLVParserLib.cpp" />
-    <ClCompile Include="..\FLVParserLib\src\GlobalUtils.cpp" />
+    <ClCompile Include="..\..\FLVParserLib\src\FLVParserLib.cpp" />
+    <ClCompile Include="..\..\FLVParserLib\src\GlobalUtils.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{32B81350-B29A-4140-9C40-7C40444875AD}</ProjectGuid>
@@ -52,8 +52,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IntDir>$(SolutionDir)$(Configuration)\intermediate</IntDir>
-    <OutDir>$(SolutionDir)$(Configuration)\output</OutDir>
+    <IntDir>$(SolutionDir)$(Configuration)\$(ProjectName)_intermediate\</IntDir>
+    <OutDir>$(SolutionDir)$(Configuration)\output\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>

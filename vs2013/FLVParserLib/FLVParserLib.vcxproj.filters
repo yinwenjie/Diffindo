@@ -9,27 +9,27 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\FLVParserLib\src\Configuration.h">
+    <ClInclude Include="..\..\FLVParserLib\src\Configuration.h">
       <Filter>0.Global</Filter>
     </ClInclude>
-    <ClInclude Include="..\FLVParserLib\src\DataTypes.h">
+    <ClInclude Include="..\..\FLVParserLib\src\DataTypes.h">
       <Filter>0.Global</Filter>
     </ClInclude>
-    <ClInclude Include="..\FLVParserLib\src\GlobalUtils.h">
+    <ClInclude Include="..\..\FLVParserLib\src\GlobalUtils.h">
       <Filter>0.Global</Filter>
     </ClInclude>
-    <ClInclude Include="..\FLVParserLib\src\Include.h">
+    <ClInclude Include="..\..\FLVParserLib\src\Include.h">
       <Filter>0.Global</Filter>
     </ClInclude>
-    <ClInclude Include="..\FLVParserLib\src\FLVParserLib.h">
+    <ClInclude Include="..\..\FLVParserLib\src\FLVParserLib.h">
       <Filter>1.Lib</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\FLVParserLib\src\GlobalUtils.cpp">
+    <ClCompile Include="..\..\FLVParserLib\src\GlobalUtils.cpp">
       <Filter>0.Global</Filter>
     </ClCompile>
-    <ClCompile Include="..\FLVParserLib\src\FLVParserLib.cpp">
+    <ClCompile Include="..\..\FLVParserLib\src\FLVParserLib.cpp">
       <Filter>1.Lib</Filter>
     </ClCompile>
   </ItemGroup>

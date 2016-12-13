@@ -22,3 +22,10 @@ CFlvParser::CFlvParser(const char *fileName)
 #endif
 
 }
+
+CFlvParser::~CFlvParser()
+{
+#if DUMP_TAG_INFO_ENABLED_LOG
+	g_logoutFile.close();
+#endif
+}
