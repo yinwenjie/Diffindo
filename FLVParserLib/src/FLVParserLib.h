@@ -11,11 +11,18 @@
 #define TAG_TYPE_VIDEO 9
 #define TAG_TYPE_SCRIPT 18
 
+// Flv parsing error codes...
+const int kFlvParserError_NoError = 0;
+const int kFlvParserError_NullFileName = -1;
+
 class FLVPARSERLIB_API CFlvParser
 {
 public:
 	CFlvParser(const char *fileName);
 	~CFlvParser();
+
+	// Parse FLV file...
+	int Parse();
 
 private:
 	const char    *m_fileName;		// input file name...

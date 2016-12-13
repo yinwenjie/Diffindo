@@ -1,4 +1,4 @@
-// FLVParserLib.cpp : 定义 DLL 应用程序的导出函数。
+// FLVParserLib.cpp : Define DLL export functions
 //
 #include "Include.h"
 #include "FLVParserLib.h"
@@ -13,7 +13,7 @@ CFlvParser::CFlvParser(const char *fileName)
 	}
 
 	m_fileSize = 0;
-	m_fileBuf = nullptr;
+	m_fileBuf = NULL;
 	m_bytesCnt = 0;
 
 #if DUMP_TAG_INFO_ENABLED_LOG
@@ -28,4 +28,9 @@ CFlvParser::~CFlvParser()
 #if DUMP_TAG_INFO_ENABLED_LOG
 	g_logoutFile.close();
 #endif
+}
+
+int CFlvParser::Parse()
+{
+	return kFlvParserError_NoError;
 }
