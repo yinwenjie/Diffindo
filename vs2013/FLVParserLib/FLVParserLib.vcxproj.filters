@@ -7,6 +7,9 @@
     <Filter Include="1.Lib">
       <UniqueIdentifier>{592cb46a-1fa9-4250-afb5-84568ea4755f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="2.File">
+      <UniqueIdentifier>{06af94d7-7e1b-4ac9-84a6-cfc0090cf38e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\FLVParserLib\src\Configuration.h">
@@ -23,6 +26,9 @@
     </ClInclude>
     <ClInclude Include="..\..\FLVParserLib\src\FLVParserLib.h">
       <Filter>1.Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\FLVParserLib\src\FLVHeader.h">
+      <Filter>2.File</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

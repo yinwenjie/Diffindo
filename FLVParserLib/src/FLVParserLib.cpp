@@ -2,6 +2,7 @@
 //
 #include "Include.h"
 #include "FLVParserLib.h"
+#include "FLVHeader.h"
 
 using namespace std;
 
@@ -24,6 +25,12 @@ CFlvParser::CFlvParser(const char *fileName)
 
 CFlvParser::~CFlvParser()
 {
+	if (m_fileBuf)
+	{
+		delete[] m_fileBuf;
+		m_fileBuf = NULL;
+	}
+
 #if DUMP_TAG_INFO_ENABLED_LOG
 	g_logoutFile.close();
 #endif
@@ -44,6 +51,14 @@ int CFlvParser::Parse()
 		return err;
 	}
 	dump_flv_file_info();
+
+	m_flvHeader = new FlvHeader;
+	err = create_flv_header();
+	if (err < 0)
+	{
+		return err;
+	}
+	dump_flv_header_info();
 
 	return kFlvParserError_NoError;
 }
@@ -103,5 +118,50 @@ void CFlvParser::dump_flv_file_info()
 	g_logoutFile << "File Name: " << m_fileName << endl;
 	g_logoutFile << "File Size: " << to_string(m_fileSize) << endl;
 	g_logoutFile << "***********************************" << endl;
+#endif
+}
+
+int CFlvParser::create_flv_header()
+{
+	m_flvHeader->signature[0] = m_fileBuf[m_bytesCnt + 0];
+	m_flvHeader->signature[1] = m_fileBuf[m_bytesCnt + 1];
+	m_flvHeader->signature[2] = m_fileBuf[m_bytesCnt + 2];
+
+	if (m_flvHeader->signature[0] != 'F' || m_flvHeader->signature[1] != 'L' || m_flvHeader->signature[2] != 'V')
+	{
+		return kFlvParserError_IllegalFlvHeader;
+	}
+
+	m_flvHeader->version = m_fileBuf[m_bytesCnt + 3];
+	m_flvHeader->audioFlag = m_fileBuf[m_bytesCnt + 4] & 0x04;
+	m_flvHeader->videoFlag = m_fileBuf[m_bytesCnt + 4] & 0x01;
+	if (m_fileBuf[m_bytesCnt + 4] & 0xFA)
+	{
+		return kFlvParserError_IllegalFlvHeader;
+	}
+
+	Read_data_lsb(&(m_flvHeader->dataOffset), m_fileBuf + m_bytesCnt + 5, 4);
+	
+	m_bytesCnt += 9;
+
+	return kFlvParserError_NoError;
+}
+
+void CFlvParser::dump_flv_header_info()
+{
+	cout << "----------------------------------" << endl;
+	cout << "FLV Version: " << to_string(m_flvHeader->version) << endl;
+	cout << "Video Flag: " << to_string(m_flvHeader->videoFlag) << endl;
+	cout << "Audio Flag: " << to_string(m_flvHeader->audioFlag) << endl;
+	cout << "Data offset: " << to_string(m_flvHeader->dataOffset) << endl;
+	cout << "----------------------------------" << endl;
+
+#if DUMP_TAG_INFO_ENABLED_LOG
+	g_logoutFile << "----------------------------------" << endl;
+	g_logoutFile << "FLV Version: " << to_string(m_flvHeader->version) << endl;
+	g_logoutFile << "Video Flag: " << to_string(m_flvHeader->videoFlag) << endl;
+	g_logoutFile << "Audio Flag: " << to_string(m_flvHeader->audioFlag) << endl;
+	g_logoutFile << "Data offset: " << to_string(m_flvHeader->dataOffset) << endl;
+	g_logoutFile << "----------------------------------" << endl;
 #endif
 }

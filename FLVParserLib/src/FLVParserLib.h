@@ -23,7 +23,9 @@ const int kFlvParserError_NoError = 0;
 const int kFlvParserError_NullFileName = -1;
 const int kFlvParserError_OpenInputFileFailed = -2;
 const int kFlvParserError_ReadInputFileFailed = -3;
+const int kFlvParserError_IllegalFlvHeader = -4;
 
+typedef struct FlvHeader FlvHeader;
 class FLVPARSERLIB_API CFlvParser
 {
 public:
@@ -44,4 +46,8 @@ private:
 	int     get_input_file_data();	// read input file data to buffer...
 	void	close_input_file();		// close input file...
 	void	dump_flv_file_info();	// dump global info of flv file...
+
+	FlvHeader *m_flvHeader;			// Flv header instance...
+	int     create_flv_header();	// create flv header from input data
+	void	dump_flv_header_info();	// dump flv header info
 };
