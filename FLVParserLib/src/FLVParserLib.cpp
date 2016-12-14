@@ -3,6 +3,7 @@
 #include "Include.h"
 #include "FLVParserLib.h"
 #include "FLVHeader.h"
+#include "FLVBody.h"
 
 using namespace std;
 
@@ -17,6 +18,9 @@ CFlvParser::CFlvParser(const char *fileName)
 	m_fileBuf = NULL;
 	m_bytesCnt = 0;
 
+	m_flvHeader = NULL;
+	m_flvBody = NULL;
+
 #if DUMP_TAG_INFO_ENABLED_LOG
 	g_logoutFile.open("log.txt");
 #endif
@@ -29,6 +33,18 @@ CFlvParser::~CFlvParser()
 	{
 		delete[] m_fileBuf;
 		m_fileBuf = NULL;
+	}
+
+	if (m_flvHeader)
+	{
+		delete m_flvHeader;
+		m_flvHeader = NULL;
+	}
+
+	if (m_flvBody)
+	{
+		delete m_flvBody;
+		m_flvBody = NULL;
 	}
 
 #if DUMP_TAG_INFO_ENABLED_LOG
@@ -59,6 +75,13 @@ int CFlvParser::Parse()
 		return err;
 	}
 	dump_flv_header_info();
+
+/*	m_flvBody = new CFlvBody;
+	err = create_flv_body();
+	if (err < 0)
+	{
+		return err;
+	}*/
 
 	return kFlvParserError_NoError;
 }
@@ -164,4 +187,15 @@ void CFlvParser::dump_flv_header_info()
 	g_logoutFile << "Data offset: " << to_string(m_flvHeader->dataOffset) << endl;
 	g_logoutFile << "----------------------------------" << endl;
 #endif
+}
+
+int CFlvParser::create_flv_body()
+{
+	int err = m_flvBody->Parse(m_fileBuf, m_bytesCnt, m_fileSize);
+	if (err < 0)
+	{
+		return err;
+	}
+
+	return kFlvParserError_NoError;
 }

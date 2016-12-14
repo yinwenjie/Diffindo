@@ -13,12 +13,14 @@
   <ItemGroup>
     <ClInclude Include="..\..\FLVParserLib\src\Configuration.h" />
     <ClInclude Include="..\..\FLVParserLib\src\DataTypes.h" />
+    <ClInclude Include="..\..\FLVParserLib\src\FLVBody.h" />
     <ClInclude Include="..\..\FLVParserLib\src\FLVHeader.h" />
     <ClInclude Include="..\..\FLVParserLib\src\FLVParserLib.h" />
     <ClInclude Include="..\..\FLVParserLib\src\GlobalUtils.h" />
     <ClInclude Include="..\..\FLVParserLib\src\Include.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\FLVParserLib\src\FLVBody.cpp" />
     <ClCompile Include="..\..\FLVParserLib\src\FLVParserLib.cpp" />
     <ClCompile Include="..\..\FLVParserLib\src\GlobalUtils.cpp" />
   </ItemGroup>

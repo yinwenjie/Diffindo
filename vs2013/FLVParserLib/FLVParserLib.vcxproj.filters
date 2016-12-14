@@ -30,6 +30,9 @@
     <ClInclude Include="..\..\FLVParserLib\src\FLVHeader.h">
       <Filter>2.File</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\FLVParserLib\src\FLVBody.h">
+      <Filter>2.File</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\FLVParserLib\src\GlobalUtils.cpp">
@@ -37,6 +40,9 @@
     </ClCompile>
     <ClCompile Include="..\..\FLVParserLib\src\FLVParserLib.cpp">
       <Filter>1.Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\FLVParserLib\src\FLVBody.cpp">
+      <Filter>2.File</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
