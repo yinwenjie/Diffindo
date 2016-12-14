@@ -1,7 +1,10 @@
 mkdir gcc_workspace
 
 cp -r -f ./../FLVParserLib/src  gcc_workspace
-cd gcc_workspace
+cp -f ./ConsoleTest.cpp ./gcc_workspace/src
 
-#g++ ./src/GlobalUtils.cpp ./src/FLVParserLib.cpp  -fPIC -shared -o libFLVParser.so
-g++ ./src/GlobalUtils.cpp ./src/FLVParserLib.cpp -shared -o libFLVParser.so
+cd gcc_workspace/src
+
+ls -al
+
+g++ ./GlobalUtils.cpp ./FLVParserLib.cpp ./ConsoleTest.cpp -o FLVParser
