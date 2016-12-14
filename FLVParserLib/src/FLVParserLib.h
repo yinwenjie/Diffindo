@@ -1,9 +1,14 @@
 
-
+#ifdef _MSC_VER
 #ifdef FLVPARSERLIB_EXPORTS
 #define FLVPARSERLIB_API __declspec(dllexport)
 #else
 #define FLVPARSERLIB_API __declspec(dllimport)
+#endif
+#endif
+
+#ifdef __GNUC__
+#define FLVPARSERLIB_API  
 #endif
 
 #include "Include.h"

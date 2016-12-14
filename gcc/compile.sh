@@ -5,6 +5,4 @@ cp -f ./ConsoleTest.cpp ./gcc_workspace/src
 
 cd gcc_workspace/src
 
-ls -al
-
-g++ ./GlobalUtils.cpp ./FLVParserLib.cpp ./ConsoleTest.cpp -o FLVParser
+g++ ./GlobalUtils.cpp ./FLVParserLib.cpp ./ConsoleTest.cpp -o ./../FLVParser
