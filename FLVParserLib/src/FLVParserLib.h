@@ -25,6 +25,7 @@ const int kFlvParserError_OpenInputFileFailed = -2;
 const int kFlvParserError_ReadInputFileFailed = -3;
 const int kFlvParserError_IllegalFlvHeader = -4;
 const int kFlvParserError_FirstPrevTagSizeNotZero = -5;
+const int kFlvParserError_StreamIDNotZero = -6;
 
 typedef struct FlvHeader FlvHeader;
 class CFlvBody;

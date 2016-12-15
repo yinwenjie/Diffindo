@@ -10,6 +10,9 @@
     <Filter Include="2.File">
       <UniqueIdentifier>{06af94d7-7e1b-4ac9-84a6-cfc0090cf38e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="3.Tag">
+      <UniqueIdentifier>{ad676580-b888-4776-8c5e-6b76a72b36ea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\FLVParserLib\src\Configuration.h">
@@ -33,6 +36,9 @@
     <ClInclude Include="..\..\FLVParserLib\src\FLVBody.h">
       <Filter>2.File</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\FLVParserLib\src\FLVTag.h">
+      <Filter>3.Tag</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\FLVParserLib\src\GlobalUtils.cpp">
@@ -43,6 +49,9 @@
     </ClCompile>
     <ClCompile Include="..\..\FLVParserLib\src\FLVBody.cpp">
       <Filter>2.File</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\FLVParserLib\src\FLVTag.cpp">
+      <Filter>3.Tag</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -76,12 +76,12 @@ int CFlvParser::Parse()
 	}
 	dump_flv_header_info();
 
-/*	m_flvBody = new CFlvBody;
+	m_flvBody = new CFlvBody;
 	err = create_flv_body();
 	if (err < 0)
 	{
 		return err;
-	}*/
+	}
 
 	return kFlvParserError_NoError;
 }
@@ -180,12 +180,10 @@ void CFlvParser::dump_flv_header_info()
 	cout << "----------------------------------" << endl;
 
 #if DUMP_TAG_INFO_ENABLED_LOG
-	g_logoutFile << "----------------------------------" << endl;
 	g_logoutFile << "FLV Version: " << to_string(m_flvHeader->version) << endl;
 	g_logoutFile << "Video Flag: " << to_string(m_flvHeader->videoFlag) << endl;
 	g_logoutFile << "Audio Flag: " << to_string(m_flvHeader->audioFlag) << endl;
 	g_logoutFile << "Data offset: " << to_string(m_flvHeader->dataOffset) << endl;
-	g_logoutFile << "----------------------------------" << endl;
 #endif
 }
 
