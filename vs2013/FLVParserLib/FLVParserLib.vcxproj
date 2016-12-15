@@ -19,12 +19,14 @@
     <ClInclude Include="..\..\FLVParserLib\src\FLVTag.h" />
     <ClInclude Include="..\..\FLVParserLib\src\GlobalUtils.h" />
     <ClInclude Include="..\..\FLVParserLib\src\Include.h" />
+    <ClInclude Include="..\..\FLVParserLib\src\VideoTag.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\FLVParserLib\src\FLVBody.cpp" />
     <ClCompile Include="..\..\FLVParserLib\src\FLVParserLib.cpp" />
     <ClCompile Include="..\..\FLVParserLib\src\FLVTag.cpp" />
     <ClCompile Include="..\..\FLVParserLib\src\GlobalUtils.cpp" />
+    <ClCompile Include="..\..\FLVParserLib\src\VideoTag.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{32B81350-B29A-4140-9C40-7C40444875AD}</ProjectGuid>

@@ -1,6 +1,7 @@
 #include "FLVParserLib.h"
 #include "FLVBody.h"
 #include "FLVTag.h"
+#include "VideoTag.h"
 
 CFlvBody::CFlvBody()
 {
@@ -23,6 +24,7 @@ int CFlvBody::Parse(BYTE *FileBuf, UINT64 &byteCnt, UINT64 fileSize)
 
 	while (byteCnt < fileSize)
 	{
+		CFlvTag *tag = NULL;
 		UINT32 prevTagSize = 0;
 		Read_data_lsb(&prevTagSize, FileBuf + byteCnt, 4);
 		byteCnt += sizeof(UINT32);
@@ -37,7 +39,19 @@ int CFlvBody::Parse(BYTE *FileBuf, UINT64 &byteCnt, UINT64 fileSize)
 		}
 
 		UINT8 tagType = FileBuf[byteCnt];
-		CFlvTag *tag = new CFlvTag(m_tagCount, FileBuf + byteCnt, tagType);
+		switch (tagType)
+		{
+		case TAG_TYPE_VIDEO:
+			tag = new CVideoTag(m_tagCount, FileBuf + byteCnt, tagType);
+			break;
+		case TAG_TYPE_AUDIO:
+		case TAG_TYPE_SCRIPT:
+			tag = new CFlvTag(m_tagCount, FileBuf + byteCnt, tagType);
+			break;
+		default:
+			return kFlvParserError_IllegalTagType;
+		}
+
 		err = tag->Parse_flv_tag();
 		if (err < 0)
 		{

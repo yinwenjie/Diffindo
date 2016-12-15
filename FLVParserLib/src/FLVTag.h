@@ -22,7 +22,7 @@ public:
 	int Parse_flv_tag();
 	void Dump_tag_info();
 
-private:
+protected:
 	UINT8*	m_tagBuffer;			//tag data buffer
 };
 

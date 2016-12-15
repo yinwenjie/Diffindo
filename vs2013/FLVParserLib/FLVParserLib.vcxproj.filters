@@ -39,6 +39,9 @@
     <ClInclude Include="..\..\FLVParserLib\src\FLVTag.h">
       <Filter>3.Tag</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\FLVParserLib\src\VideoTag.h">
+      <Filter>3.Tag</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\FLVParserLib\src\GlobalUtils.cpp">
@@ -51,6 +54,9 @@
       <Filter>2.File</Filter>
     </ClCompile>
     <ClCompile Include="..\..\FLVParserLib\src\FLVTag.cpp">
+      <Filter>3.Tag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\FLVParserLib\src\VideoTag.cpp">
       <Filter>3.Tag</Filter>
     </ClCompile>
   </ItemGroup>

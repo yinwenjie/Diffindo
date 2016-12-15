@@ -1,5 +1,6 @@
 #include "FLVParserLib.h"
 #include "FLVTag.h"
+#include "VideoTag.h"
 
 using namespace std;
 
@@ -29,6 +30,15 @@ int CFlvTag::Parse_flv_tag()
 		return kFlvParserError_StreamIDNotZero;
 	}
 
+	if (m_tagType == TAG_TYPE_VIDEO)
+	{
+		CVideoTag *videoTagPtr = dynamic_cast<CVideoTag *>(this);
+		if (NULL != videoTagPtr)
+		{
+			videoTagPtr->Parse_video_tag_detail();			
+		}
+	}
+	
 	return kFlvParserError_NoError;
 }
 
@@ -42,5 +52,15 @@ void CFlvTag::Dump_tag_info()
 	g_logoutFile << "TimeStamp: " << to_string(m_timeStamp) << endl;
 	g_logoutFile << "TimeStampExtension: " << to_string(m_timeStampExtension) << endl;
 	g_logoutFile << "StreamID: " << to_string(m_streamID) << endl;
+
+	if (m_tagType == TAG_TYPE_VIDEO)
+	{
+		CVideoTag *videoTagPtr = dynamic_cast<CVideoTag *>(this);
+		if (NULL != videoTagPtr)
+		{
+			videoTagPtr->Dump_video_tag_info();
+		}
+	}
+
 #endif
 }
