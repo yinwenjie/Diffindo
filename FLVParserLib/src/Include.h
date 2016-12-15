@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <cstring>
 
 #include "DataTypes.h"
 #include "Configuration.h"
