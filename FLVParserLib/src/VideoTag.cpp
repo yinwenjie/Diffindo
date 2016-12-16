@@ -11,6 +11,7 @@ CVideoTag::CVideoTag(UINT32 idx, UINT8 *buf, UINT8 type) : CFlvTag(idx, buf, typ
 	m_CompositionTime = 0;
 
 	m_decCfgRcrd = NULL;
+	m_nalu = NULL;
 }
 
 CVideoTag::~CVideoTag()
@@ -20,10 +21,27 @@ CVideoTag::~CVideoTag()
 		delete m_decCfgRcrd;
 		m_decCfgRcrd = NULL;
 	}
+
+	if (m_nalu)
+	{
+		NALUnit *currentUnit = m_nalu, *nextUnit = currentUnit->nextNalu;
+		do 
+		{
+			delete currentUnit;
+			currentUnit = nextUnit;
+			if (nextUnit)
+			{
+				nextUnit = nextUnit->nextNalu;
+			}
+		} 
+		while (currentUnit);
+	}
 }
 
 int CVideoTag::Parse_video_tag_detail()
 {
+	int err = 0;
+
 	m_frameType = m_tagBuffer[11] >> 4;
 	if (m_frameType < 1 || m_frameType > 5)
 	{
@@ -40,7 +58,19 @@ int CVideoTag::Parse_video_tag_detail()
 	if (m_AVCPacketType == 0)
 	{
 		m_decCfgRcrd = new AVCDecoderConfigurationRecord;
-		m_decCfgRcrd->Parse_as_configuration_record(m_tagBuffer + 16);
+		err = m_decCfgRcrd->Parse_as_configuration_record(m_tagBuffer + 16);
+		if (err < 0)
+		{
+			return err;
+		}
+	}
+	else if (m_AVCPacketType == 1)
+	{
+		err = parse_nal_units();
+		if (err < 0)
+		{
+			return err;
+		}
 	}
 
 	return kFlvParserError_NoError;
@@ -82,4 +112,36 @@ void CVideoTag::dump_video_payload_info()
 	{
 
 	}
+}
+
+int CVideoTag::parse_nal_units()
+{
+	int err = 0;
+	BYTE *nalsBuffer = m_tagBuffer + 16;
+	UINT32 totalNalLength = 0, naluSize = 0;
+	NALUnit *currentUnit = NULL;
+
+	while (totalNalLength < m_dataSize - 5)
+	{
+		NALUnit *tempUnit = new NALUnit;
+		err = tempUnit->Get_nal_unit(nalsBuffer + totalNalLength, false);
+		if (err < 0)
+		{
+			return err;
+		}
+		totalNalLength += (tempUnit->naluLength + 4);
+
+		if (!m_nalu)
+		{
+			m_nalu = tempUnit;
+			currentUnit = m_nalu;
+		}
+		else
+		{
+			currentUnit->nextNalu = tempUnit;
+			currentUnit = tempUnit;
+		}
+	}
+
+	return kFlvParserError_NoError;
 }

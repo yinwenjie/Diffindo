@@ -15,15 +15,23 @@ typedef struct NALUnit
 		naluLength = 0;
 		nextNalu = NULL;
 	}
-	int Get_nal_unit(BYTE *inputBuffer)
+	int Get_nal_unit(BYTE *inputBuffer, bool paramaterSets)
 	{
-		Read_data_lsb(&naluLength, inputBuffer, 2);
+		int sizeLength = 4;
+		if (paramaterSets)
+		{
+			sizeLength = 2;
+		} 
+		
+		Read_data_lsb(&naluLength, inputBuffer, sizeLength);
 		if (naluLength == 0)
 		{
 			return kFlvParserError_EmptyNALUnit;
 		}
 		naluBuffer = new BYTE[naluLength];
-		memcpy(naluBuffer, inputBuffer + 2, naluLength);
+		memcpy(naluBuffer, inputBuffer + sizeLength, naluLength);
+
+		return kFlvParserError_NoError;
 	}
 	~NALUnit()
 	{
@@ -74,7 +82,7 @@ typedef struct AVCDecoderConfigurationRecord
 		if (numSPS == 1)
 		{
 			sps = new NALUnit;
-			sps->Get_nal_unit(buf + bytePosition);
+			sps->Get_nal_unit(buf + bytePosition, true);
 			bytePosition += (2 + sps->naluLength);
 		}
 		else
@@ -85,7 +93,7 @@ typedef struct AVCDecoderConfigurationRecord
 		if (numPPS == 1)
 		{
 			pps = new NALUnit;
-			pps->Get_nal_unit(buf + bytePosition);
+			pps->Get_nal_unit(buf + bytePosition, true);
 		} 
 		else
 		{
@@ -125,8 +133,11 @@ public:
 
 	AVCDecoderConfigurationRecord *m_decCfgRcrd;
 
+	NALUnit *m_nalu;
+
 private:
 	void dump_video_payload_info();
+	int parse_nal_units();
 };
 
 #endif
