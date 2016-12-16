@@ -27,6 +27,11 @@ const int kFlvParserError_IllegalFlvHeader = -4;
 const int kFlvParserError_FirstPrevTagSizeNotZero = -5;
 const int kFlvParserError_StreamIDNotZero = -6;
 const int kFlvParserError_IllegalTagType = -7;
+const int kFlvParserError_IllegalVideoFrameType = -8;
+const int kFlvParserError_UnsupportedVideoCodecID = -9;
+const int kFlvParserError_MultipleSPSPPSinVideoHeader = -10;
+const int kFlvParserError_UnsupportedNALUnitLengthSize = -11;
+const int kFlvParserError_EmptyNALUnit = -12;
 
 typedef struct FlvHeader FlvHeader;
 class CFlvBody;

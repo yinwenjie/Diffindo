@@ -6,17 +6,19 @@ using namespace std;
 
 CFlvTag::CFlvTag(UINT32 idx, UINT8 *buf, UINT8 type)
 {
-	memset(this, 0, sizeof(CFlvTag));
+	m_tagBuffer = buf;
+	m_nextTag = NULL;
 
 	m_tagIdx = idx;
-	m_tagBuffer = buf;
 	m_tagType = type;
-	m_nextTag = NULL;
+	m_dataSize = 0;
+	m_timeStamp = 0;
+	m_timeStampExtension = 0;
+	m_streamID = 0;
 }
 
 CFlvTag::~CFlvTag()
 {
-	
 }
 
 int CFlvTag::Parse_flv_tag()

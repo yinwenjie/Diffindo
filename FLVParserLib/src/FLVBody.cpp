@@ -15,7 +15,7 @@ CFlvBody::CFlvBody()
 
 CFlvBody::~CFlvBody()
 {
-
+	deleteTags();
 }
 
 int CFlvBody::Parse(BYTE *FileBuf, UINT64 &byteCnt, UINT64 fileSize)
@@ -75,4 +75,16 @@ int CFlvBody::Parse(BYTE *FileBuf, UINT64 &byteCnt, UINT64 fileSize)
 	}
 
 	return kFlvParserError_NoError;
+}
+
+void CFlvBody::deleteTags()
+{
+	CFlvTag *tag = m_firstTag, *tmpTag = NULL;
+
+	while (tag)
+	{
+		tmpTag = tag->m_nextTag;
+		delete tag;
+		tag = tmpTag;
+	}
 }

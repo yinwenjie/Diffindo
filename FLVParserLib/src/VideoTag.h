@@ -4,6 +4,111 @@
 #include "FLVTag.h"
 #include "DataTypes.h"
 
+typedef struct NALUnit
+{	
+	UINT32 naluLength;
+	BYTE *naluBuffer;
+	struct NALUnit *nextNalu;
+	NALUnit()
+	{
+		naluBuffer = NULL;
+		naluLength = 0;
+		nextNalu = NULL;
+	}
+	int Get_nal_unit(BYTE *inputBuffer)
+	{
+		Read_data_lsb(&naluLength, inputBuffer, 2);
+		if (naluLength == 0)
+		{
+			return kFlvParserError_EmptyNALUnit;
+		}
+		naluBuffer = new BYTE[naluLength];
+		memcpy(naluBuffer, inputBuffer + 2, naluLength);
+	}
+	~NALUnit()
+	{
+		if (naluBuffer)
+		{
+			delete[] naluBuffer;
+			naluBuffer = NULL;
+		}
+	}
+} NALUnit;
+
+typedef struct AVCDecoderConfigurationRecord
+{
+	UINT8 configurationVersion;
+	UINT8 AVCProfileIndication;
+	UINT8 profile_compatibility;
+	UINT8 AVCLevelIndication;
+	UINT8 lengthSize;
+	UINT8 numSPS;
+	NALUnit *sps;
+	UINT8 numPPS;
+	NALUnit *pps;
+	AVCDecoderConfigurationRecord()
+	{
+		configurationVersion = 0;
+		AVCProfileIndication = 0;
+		profile_compatibility = 0;
+		AVCLevelIndication = 0;
+		lengthSize = 0;
+		numSPS = 0;
+		sps = NULL;
+		numPPS = 0;
+		pps = NULL;
+	}
+	int Parse_as_configuration_record(BYTE *buf)
+	{
+		int bytePosition = 0;
+		configurationVersion = buf[bytePosition++];
+		AVCProfileIndication = buf[bytePosition++];
+		profile_compatibility = buf[bytePosition++];
+		AVCLevelIndication = buf[bytePosition++];
+		lengthSize = (buf[bytePosition++] & 0x03) + 1;
+		if (lengthSize < 4)
+		{
+			return kFlvParserError_UnsupportedNALUnitLengthSize;
+		}
+		numSPS = buf[bytePosition++] & 0x1f;
+		if (numSPS == 1)
+		{
+			sps = new NALUnit;
+			sps->Get_nal_unit(buf + bytePosition);
+			bytePosition += (2 + sps->naluLength);
+		}
+		else
+		{
+			return kFlvParserError_MultipleSPSPPSinVideoHeader;
+		}
+		numPPS = buf[bytePosition++];
+		if (numPPS == 1)
+		{
+			pps = new NALUnit;
+			pps->Get_nal_unit(buf + bytePosition);
+		} 
+		else
+		{
+			return kFlvParserError_MultipleSPSPPSinVideoHeader;
+		}
+		
+		return kFlvParserError_NoError;
+	}
+	~AVCDecoderConfigurationRecord()
+	{
+		if (sps)
+		{
+			delete sps;
+			sps = NULL;
+		}
+		if (pps)
+		{
+			delete pps;
+			pps = NULL;
+		}
+	}
+} AVCDecoderConfigurationRecord;
+
 class CVideoTag : public CFlvTag
 {
 public:
@@ -17,6 +122,11 @@ public:
 
 	int Parse_video_tag_detail();
 	void Dump_video_tag_info();
+
+	AVCDecoderConfigurationRecord *m_decCfgRcrd;
+
+private:
+	void dump_video_payload_info();
 };
 
 #endif

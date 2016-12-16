@@ -17,6 +17,8 @@ private:
 
 	CFlvTag *m_firstTag;
 	CFlvTag *m_recentTag;
+
+	void	deleteTags();
 };
 
 #endif
