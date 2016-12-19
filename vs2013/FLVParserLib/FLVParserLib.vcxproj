@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\FLVParserLib\src\AudioTag.h" />
     <ClInclude Include="..\..\FLVParserLib\src\Configuration.h" />
     <ClInclude Include="..\..\FLVParserLib\src\DataTypes.h" />
     <ClInclude Include="..\..\FLVParserLib\src\FLVBody.h" />
@@ -22,6 +23,7 @@
     <ClInclude Include="..\..\FLVParserLib\src\VideoTag.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\FLVParserLib\src\AudioTag.cpp" />
     <ClCompile Include="..\..\FLVParserLib\src\FLVBody.cpp" />
     <ClCompile Include="..\..\FLVParserLib\src\FLVParserLib.cpp" />
     <ClCompile Include="..\..\FLVParserLib\src\FLVTag.cpp" />

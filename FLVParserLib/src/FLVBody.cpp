@@ -2,6 +2,7 @@
 #include "FLVBody.h"
 #include "FLVTag.h"
 #include "VideoTag.h"
+#include "AudioTag.h"
 
 CFlvBody::CFlvBody()
 {
@@ -45,6 +46,8 @@ int CFlvBody::Parse(BYTE *FileBuf, UINT64 &byteCnt, UINT64 fileSize)
 			tag = new CVideoTag(m_tagCount, FileBuf + byteCnt, tagType);
 			break;
 		case TAG_TYPE_AUDIO:
+			tag = new CAudioTag(m_tagCount, FileBuf + byteCnt, tagType);
+			break;
 		case TAG_TYPE_SCRIPT:
 			tag = new CFlvTag(m_tagCount, FileBuf + byteCnt, tagType);
 			break;

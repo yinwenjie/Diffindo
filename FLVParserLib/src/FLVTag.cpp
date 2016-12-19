@@ -1,6 +1,7 @@
 #include "FLVParserLib.h"
 #include "FLVTag.h"
 #include "VideoTag.h"
+#include "AudioTag.h"
 
 using namespace std;
 
@@ -40,6 +41,14 @@ int CFlvTag::Parse_flv_tag()
 			videoTagPtr->Parse_video_tag_detail();			
 		}
 	}
+	else if (m_tagType == TAG_TYPE_AUDIO)
+	{
+		CAudioTag *audioTagPtr = dynamic_cast<CAudioTag *>(this);
+		if (NULL != audioTagPtr)
+		{
+			audioTagPtr->Parse_audio_tag_detail();
+		}
+	}
 	
 	return kFlvParserError_NoError;
 }
@@ -61,6 +70,14 @@ void CFlvTag::Dump_tag_info()
 		if (NULL != videoTagPtr)
 		{
 			videoTagPtr->Dump_video_tag_info();
+		}
+	}
+	else if (m_tagType == TAG_TYPE_AUDIO)
+	{
+		CAudioTag *audioTagPtr = dynamic_cast<CAudioTag *>(this);
+		if (NULL != audioTagPtr)
+		{
+			audioTagPtr->Dump_audio_tag_info();
 		}
 	}
 
