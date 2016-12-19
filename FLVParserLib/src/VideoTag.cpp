@@ -110,7 +110,9 @@ void CVideoTag::dump_video_payload_info()
 	}
 	else
 	{
-
+#if DUMP_NAL_UNIT_INFO_LOG
+		dump_nal_units_info();
+#endif
 	}
 }
 
@@ -129,6 +131,7 @@ int CVideoTag::parse_nal_units()
 		{
 			return err;
 		}
+		tempUnit->Parse_nal();
 		totalNalLength += (tempUnit->naluLength + 4);
 
 		if (!m_nalu)
@@ -144,4 +147,18 @@ int CVideoTag::parse_nal_units()
 	}
 
 	return kFlvParserError_NoError;
+}
+
+void CVideoTag::dump_nal_units_info()
+{
+	NALUnit *unit = m_nalu;
+	while (unit)
+	{
+		g_logoutFile << "NAL Unit Type: " << to_string(unit->nalType) << endl;
+		if (unit->nalType == 5 || unit->nalType == 1)
+		{
+			g_logoutFile << "Slice Type: " << to_string(unit->sliceType) << endl;
+		}
+		unit = unit->nextNalu;
+	}
 }

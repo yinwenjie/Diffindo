@@ -9,4 +9,9 @@ extern std::ofstream g_logoutFile;//输出日志文件对象
 
 void Read_data_lsb(void *dst, void *src, int length);
 
+// Get bool value from bit position..
+int Get_bit_at_position(UINT8 *buf, UINT8 &bytePosition, UINT8 &bitPosition);
+// Parse bit stream using Expo-Columb coding
+int Get_uev_code_num(UINT8 *buf, UINT8 &bytePosition, UINT8 &bitPosition);
+
 #endif

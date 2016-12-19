@@ -8,11 +8,17 @@ typedef struct NALUnit
 {	
 	UINT32 naluLength;
 	BYTE *naluBuffer;
+	BYTE nalType;
+	BYTE sliceType;
+
 	struct NALUnit *nextNalu;
+
 	NALUnit()
 	{
 		naluBuffer = NULL;
 		naluLength = 0;
+		nalType = 0;
+		sliceType = 0;
 		nextNalu = NULL;
 	}
 	int Get_nal_unit(BYTE *inputBuffer, bool paramaterSets)
@@ -31,6 +37,16 @@ typedef struct NALUnit
 		naluBuffer = new BYTE[naluLength];
 		memcpy(naluBuffer, inputBuffer + sizeLength, naluLength);
 
+		return kFlvParserError_NoError;
+	}
+	int Parse_nal()
+	{
+		nalType = naluBuffer[0] & 0x1f;
+		if (nalType == 5 || nalType == 1)
+		{
+			UINT8 bytePos = 1, bitPos = 1;
+			sliceType = Get_uev_code_num(naluBuffer, bytePos, bitPos);
+		}
 		return kFlvParserError_NoError;
 	}
 	~NALUnit()
@@ -138,6 +154,7 @@ public:
 private:
 	void dump_video_payload_info();
 	int parse_nal_units();
+	void dump_nal_units_info();
 };
 
 #endif
