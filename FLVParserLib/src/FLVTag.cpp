@@ -57,6 +57,7 @@ void CFlvTag::Dump_tag_info()
 {
 #if DUMP_TAG_INFO_ENABLED_LOG
 	g_logoutFile << "-----------------------------------" << endl;
+	g_logoutFile << "Previous Tag Size: " << to_string(m_prevTagSize) << endl;
 	g_logoutFile << "Tag Index: " << to_string(m_tagIdx) << endl;
 	g_logoutFile << "Tag Type: " << (m_tagType == 18 ? "Script" : (m_tagType == 8 ? "Audio" : "Video")) << endl;
 	g_logoutFile << "Data Size: " << to_string(m_dataSize) << endl;

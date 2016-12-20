@@ -32,11 +32,14 @@ const int kFlvParserError_UnsupportedVideoCodecID = -9;
 const int kFlvParserError_MultipleSPSPPSinVideoHeader = -10;
 const int kFlvParserError_UnsupportedNALUnitLengthSize = -11;
 const int kFlvParserError_EmptyNALUnit = -12;
+const int kFlvParserError_OpenOutputFileFailed = -13;
+const int kFlvParserError_WriteOutputFileFailed = -14;
 
 typedef struct FlvHeader FlvHeader;
 class CFlvBody;
 class FLVPARSERLIB_API CFlvParser
 {
+	friend class CFlvWriter;
 public:
 	CFlvParser(const char *fileName);
 	~CFlvParser();
@@ -63,4 +66,18 @@ private:
 	CFlvBody *m_flvBody;			// Flv body instance...
 	int     create_flv_body();		// create flv body from input data
 
+};
+
+class FLVPARSERLIB_API CFlvWriter
+{
+public:
+	CFlvWriter(const char *outputFileName, const CFlvParser *parser);
+	~CFlvWriter(); 
+	int Init(bool videoFlag, bool audioFlag);
+	int Clone_FLV_with_video();
+
+private:
+	const CFlvParser *m_parser;
+	const char *m_outputFileName;
+	std::ofstream m_outputFileStream;
 };

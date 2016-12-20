@@ -9,6 +9,8 @@ public:
 	CFlvTag(UINT32 idx, UINT8 *buf, UINT8 type);
 	virtual ~CFlvTag();
 
+	UINT32  m_prevTagSize;
+
 	UINT32	m_tagIdx;				//total tag index
 	UINT8	m_tagType;				//current tag type - script data / audio / video
 	UINT32	m_dataSize;				//payload data size of this tag
@@ -22,7 +24,6 @@ public:
 	int Parse_flv_tag();
 	void Dump_tag_info();
 
-protected:
 	UINT8*	m_tagBuffer;			//tag data buffer
 };
 

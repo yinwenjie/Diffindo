@@ -4,6 +4,7 @@
 #include "FLVParserLib.h"
 #include "FLVHeader.h"
 #include "FLVBody.h"
+#include "FLVTag.h"
 
 using namespace std;
 
@@ -193,6 +194,84 @@ int CFlvParser::create_flv_body()
 	if (err < 0)
 	{
 		return err;
+	}
+
+	return kFlvParserError_NoError;
+}
+
+CFlvWriter::CFlvWriter(const char *outputFileName, const CFlvParser *parser)
+{
+	m_outputFileName = outputFileName;
+	m_parser = parser;
+}
+
+CFlvWriter::~CFlvWriter()
+{
+	if (m_outputFileStream.is_open())
+	{
+		m_outputFileStream.close();
+	}
+}
+
+int CFlvWriter::Init(bool videoFlag, bool audioFlag)
+{
+	m_outputFileStream.open(m_outputFileName, ios_base::binary);
+	if (!m_outputFileStream.is_open())
+	{
+		return kFlvParserError_OpenOutputFileFailed;
+	}
+
+	BYTE flvHeader[9] = { 'F', 'L', 'V', 0x01, 0x00, 0x00, 0x00, 0x00, 0x09};
+	if (videoFlag)
+	{
+		flvHeader[4] |= 0x01;
+	}
+	if (audioFlag)
+	{
+		flvHeader[4] |= 0x04;
+	}
+
+	// Write FLV header..
+	m_outputFileStream.write(reinterpret_cast<const char*>(flvHeader), 9 * sizeof(UINT8));
+	if ((m_outputFileStream.rdstate() & ofstream::failbit) || (m_outputFileStream.rdstate() & ofstream::badbit))
+	{
+		m_outputFileStream.close();
+		return kFlvParserError_WriteOutputFileFailed;
+	}
+	m_outputFileStream.flush();
+
+	return kFlvParserError_NoError;
+}
+
+int CFlvWriter::Clone_FLV_with_video()
+{
+	CFlvTag *tag = m_parser->m_flvBody->Get_first_tag();
+
+	while (tag)
+	{
+		if (tag->m_tagType == TAG_TYPE_AUDIO)
+		{
+			tag = tag->m_nextTag;
+			continue;
+		}
+
+		m_outputFileStream.write(reinterpret_cast<const char*>(&tag->m_prevTagSize), sizeof(UINT32));
+		if ((m_outputFileStream.rdstate() & ifstream::failbit) || (m_outputFileStream.rdstate() & ifstream::badbit))
+		{
+			m_outputFileStream.close();
+			return kFlvParserError_WriteOutputFileFailed;
+		}
+		m_outputFileStream.flush();
+
+		m_outputFileStream.write(reinterpret_cast<const char*>(tag->m_tagBuffer), tag->m_dataSize + 11);
+		if ((m_outputFileStream.rdstate() & ifstream::failbit) || (m_outputFileStream.rdstate() & ifstream::badbit))
+		{
+			m_outputFileStream.close();
+			return kFlvParserError_WriteOutputFileFailed;
+		}
+		m_outputFileStream.flush();
+
+		tag = tag->m_nextTag;
 	}
 
 	return kFlvParserError_NoError;

@@ -9,6 +9,7 @@ public:
 	~CFlvBody();
 
 	int Parse(BYTE *FileBuf, UINT64 &byteCnt, UINT64 fileSize);
+	CFlvTag *Get_first_tag();
 
 private:
 	UINT32	m_tagCount;

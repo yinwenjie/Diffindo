@@ -60,6 +60,7 @@ int CFlvBody::Parse(BYTE *FileBuf, UINT64 &byteCnt, UINT64 fileSize)
 		{
 			return err;
 		}
+		tag->m_prevTagSize = prevTagSize;
 		tag->Dump_tag_info();
 
 		if (m_tagCount == 0)
@@ -78,6 +79,11 @@ int CFlvBody::Parse(BYTE *FileBuf, UINT64 &byteCnt, UINT64 fileSize)
 	}
 
 	return kFlvParserError_NoError;
+}
+
+CFlvTag * CFlvBody::Get_first_tag()
+{
+	return m_firstTag;
 }
 
 void CFlvBody::deleteTags()
