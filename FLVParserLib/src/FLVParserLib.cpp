@@ -254,25 +254,136 @@ int CFlvWriter::Clone_FLV_with_video()
 			tag = tag->m_nextTag;
 			continue;
 		}
-
-		m_outputFileStream.write(reinterpret_cast<const char*>(&tag->m_prevTagSize), sizeof(UINT32));
-		if ((m_outputFileStream.rdstate() & ifstream::failbit) || (m_outputFileStream.rdstate() & ifstream::badbit))
-		{
-			m_outputFileStream.close();
-			return kFlvParserError_WriteOutputFileFailed;
-		}
-		m_outputFileStream.flush();
-
-		m_outputFileStream.write(reinterpret_cast<const char*>(tag->m_tagBuffer), tag->m_dataSize + 11);
-		if ((m_outputFileStream.rdstate() & ifstream::failbit) || (m_outputFileStream.rdstate() & ifstream::badbit))
-		{
-			m_outputFileStream.close();
-			return kFlvParserError_WriteOutputFileFailed;
-		}
-		m_outputFileStream.flush();
+		
+		write_tag(tag);
 
 		tag = tag->m_nextTag;
 	}
+
+	return kFlvParserError_NoError;
+}
+
+int CFlvWriter::Clone_with_tag_index_range(UINT32 startIdx, UINT32 endIdx)
+{
+	if (startIdx < 0 || startIdx > endIdx)
+	{
+		return kFlvParserError_IllegalFlvWriterIdxRange;
+	}
+
+	CFlvTag *tag = m_parser->m_flvBody->Get_first_tag();
+	while (tag)
+	{
+		if (tag->m_tagIdx < startIdx)
+		{
+			tag = tag->m_nextTag;
+			continue;
+		}
+
+		if (tag->m_tagIdx > endIdx)
+		{
+			break;
+		}
+
+		write_tag(tag);
+
+		tag = tag->m_nextTag;
+	}
+
+	return kFlvParserError_NoError;
+}
+
+int CFlvWriter::Clone_with_tag_time_stamp_range(UINT32 startTS, UINT32 endTS)
+{
+	if (startTS < 0 || startTS > endTS)
+	{
+		return kFlvParserError_IllegalFlvWriterIdxTimeStamp;
+	}
+
+	CFlvTag *tag = m_parser->m_flvBody->Get_first_tag();
+	while (tag)
+	{
+		if (tag->m_timeStamp < startTS)
+		{
+			tag = tag->m_nextTag;
+			continue;
+		}
+
+		if (tag->m_timeStamp > endTS)
+		{
+			break;
+		}
+
+		write_tag(tag);
+
+		tag = tag->m_nextTag;
+	}
+	return kFlvParserError_NoError;
+}
+
+int CFlvWriter::write_tag(CFlvTag *tag)
+{
+	BYTE streamID[3] = { 0 };
+
+	UINT32 prevTagSize = tag->m_prevTagSize;
+	endian_swap(reinterpret_cast<BYTE *>(&prevTagSize), 4);
+	m_outputFileStream.write(reinterpret_cast<const char*>(&prevTagSize), sizeof(UINT32));
+	if ((m_outputFileStream.rdstate() & ifstream::failbit) || (m_outputFileStream.rdstate() & ifstream::badbit))
+	{
+		m_outputFileStream.close();
+		return kFlvParserError_WriteOutputFileFailed;
+	}
+	m_outputFileStream.flush();
+
+	// Write tag type..
+	UINT8 tagType = tag->m_tagType;
+	m_outputFileStream.write(reinterpret_cast<const char*>(&tagType), sizeof(UINT8));
+	if ((m_outputFileStream.rdstate() & ifstream::failbit) || (m_outputFileStream.rdstate() & ifstream::badbit))
+	{
+		m_outputFileStream.close();
+		return kFlvParserError_WriteOutputFileFailed;
+	}
+	m_outputFileStream.flush();
+
+	// Write data size..
+	UINT32 dataSize = tag->m_dataSize;
+	endian_swap(reinterpret_cast<BYTE *>(&dataSize), 3);
+	m_outputFileStream.write(reinterpret_cast<const char*>(&dataSize), 3 * sizeof(UINT8));
+	if ((m_outputFileStream.rdstate() & ifstream::failbit) || (m_outputFileStream.rdstate() & ifstream::badbit))
+	{
+		m_outputFileStream.close();
+		return kFlvParserError_WriteOutputFileFailed;
+	}
+	m_outputFileStream.flush();
+
+	// Write timestamp
+	UINT32 timestamp = tag->m_timeStamp;
+	endian_swap(reinterpret_cast<BYTE *>(&timestamp), 3);
+	timestamp += tag->m_timeStampExtension;
+	m_outputFileStream.write(reinterpret_cast<const char*>(&timestamp), sizeof(UINT32));
+	if ((m_outputFileStream.rdstate() & ifstream::failbit) || (m_outputFileStream.rdstate() & ifstream::badbit))
+	{
+		m_outputFileStream.close();
+		return kFlvParserError_WriteOutputFileFailed;
+	}
+	m_outputFileStream.flush();
+
+	// Write stream id
+	m_outputFileStream.write(reinterpret_cast<const char*>(streamID), 3 * sizeof(BYTE));
+	if ((m_outputFileStream.rdstate() & ifstream::failbit) || (m_outputFileStream.rdstate() & ifstream::badbit))
+	{
+		m_outputFileStream.close();
+		return kFlvParserError_WriteOutputFileFailed;
+	}
+	m_outputFileStream.flush();
+
+	// Write payload data
+	m_outputFileStream.write(reinterpret_cast<const char*>(tag->m_tagBuffer + 11), tag->m_dataSize);
+	if ((m_outputFileStream.rdstate() & ifstream::failbit) || (m_outputFileStream.rdstate() & ifstream::badbit))
+	{
+		m_outputFileStream.close();
+		return kFlvParserError_WriteOutputFileFailed;
+	}
+	m_outputFileStream.flush();
 
 	return kFlvParserError_NoError;
 }

@@ -3,6 +3,7 @@
 
 # if DUMP_TAG_INFO_ENABLED_LOG
 std::ofstream g_logoutFile; //输出日志文件对象
+#endif
 
 void Read_data_lsb(void *dst, void *src, int length)
 {
@@ -58,5 +59,13 @@ int Get_uev_code_num(UINT8 *buf, UINT8 &bytePosition, UINT8 &bitPosition)
 	return prefix;
 }
 
-
-#endif
+// 内存字节翻转
+void endian_swap(BYTE *buf, int len)
+{
+	for (int idx = 0; idx < len / 2; idx++)
+	{
+		BYTE temp = buf[idx];
+		buf[idx] = buf[len - idx - 1];
+		buf[len - idx - 1] = temp;
+	}
+}

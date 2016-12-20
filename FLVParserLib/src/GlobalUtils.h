@@ -8,6 +8,7 @@ extern std::ofstream g_logoutFile;//输出日志文件对象
 #endif
 
 void Read_data_lsb(void *dst, void *src, int length);
+void endian_swap(BYTE *buf, int len);
 
 // Get bool value from bit position..
 int Get_bit_at_position(UINT8 *buf, UINT8 &bytePosition, UINT8 &bitPosition);

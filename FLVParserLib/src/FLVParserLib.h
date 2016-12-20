@@ -34,9 +34,12 @@ const int kFlvParserError_UnsupportedNALUnitLengthSize = -11;
 const int kFlvParserError_EmptyNALUnit = -12;
 const int kFlvParserError_OpenOutputFileFailed = -13;
 const int kFlvParserError_WriteOutputFileFailed = -14;
+const int kFlvParserError_IllegalFlvWriterIdxRange = -15;
+const int kFlvParserError_IllegalFlvWriterIdxTimeStamp = -16;
 
 typedef struct FlvHeader FlvHeader;
 class CFlvBody;
+class CFlvTag;
 class FLVPARSERLIB_API CFlvParser
 {
 	friend class CFlvWriter;
@@ -75,9 +78,13 @@ public:
 	~CFlvWriter(); 
 	int Init(bool videoFlag, bool audioFlag);
 	int Clone_FLV_with_video();
+	int Clone_with_tag_index_range(UINT32 startIdx, UINT32 endIdx);
+	int Clone_with_tag_time_stamp_range(UINT32 startTS, UINT32 endTS);
 
 private:
 	const CFlvParser *m_parser;
 	const char *m_outputFileName;
 	std::ofstream m_outputFileStream;
+
+	int write_tag(CFlvTag *tag);
 };
