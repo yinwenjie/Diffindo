@@ -10,6 +10,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConsoleTest", "ConsoleTest\
 		{32B81350-B29A-4140-9C40-7C40444875AD} = {32B81350-B29A-4140-9C40-7C40444875AD}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MP4ParserLib", "MP4ParserLib\MP4ParserLib.vcxproj", "{8D1857CA-944B-45FF-A226-B8613BB996AE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -24,6 +26,10 @@ Global
 		{2050A311-17F2-45C8-96BC-14AE41F86CD2}.Debug|Win32.Build.0 = Debug|Win32
 		{2050A311-17F2-45C8-96BC-14AE41F86CD2}.Release|Win32.ActiveCfg = Release|Win32
 		{2050A311-17F2-45C8-96BC-14AE41F86CD2}.Release|Win32.Build.0 = Release|Win32
+		{8D1857CA-944B-45FF-A226-B8613BB996AE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8D1857CA-944B-45FF-A226-B8613BB996AE}.Debug|Win32.Build.0 = Debug|Win32
+		{8D1857CA-944B-45FF-A226-B8613BB996AE}.Release|Win32.ActiveCfg = Release|Win32
+		{8D1857CA-944B-45FF-A226-B8613BB996AE}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
