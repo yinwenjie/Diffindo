@@ -12,13 +12,6 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-	double factor = atof(argv[3]);
-	CFlvWriter flvWriter(argv[2], &flvParser);
-	flvWriter.Init(true, true);
-	flvWriter.Clone_with_accelerating_factor(factor);
-
-	return 0;
-
 	char* funcIdx = argv[3];
 	if (!strcmp(funcIdx, "-v"))
 	{

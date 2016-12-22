@@ -5,8 +5,11 @@
 #include "FLVHeader.h"
 #include "FLVBody.h"
 #include "FLVTag.h"
+#include "VideoTag.h"
 
 using namespace std;
+
+FLVPARSERLIB_API RuntimeConfiguration g_config;
 
 CFlvParser::CFlvParser(const char *fileName)
 {
@@ -320,6 +323,94 @@ int CFlvWriter::Clone_with_tag_time_stamp_range(UINT32 startTS, UINT32 endTS)
 	return kFlvParserError_NoError;
 }
 
+int CFlvWriter::Clone_with_accelerating_factor(double factor)
+{
+	if (factor > 10.0)
+	{
+		factor = 10.0;
+	}
+	if (factor == 0.0)
+	{
+		factor = 1;
+	}
+
+	CFlvTag *tag = m_parser->m_flvBody->Get_first_tag();
+	while (tag)
+	{
+		tag->m_timeStamp /= factor;
+
+		write_tag(tag);
+
+		tag = tag->m_nextTag;
+	}
+
+	return kFlvParserError_NoError;
+}
+
+int CFlvWriter::Extract_H264_raw_stream()
+{
+	m_outputH264Stream.open(m_outputFileName, ios_base::binary);
+	if (!m_outputH264Stream.is_open())
+	{
+		return kFlvParserError_OpenOutputFileFailed;
+	}
+
+	CFlvTag *tag = m_parser->m_flvBody->Get_first_tag();
+	BYTE *spsBuf = NULL, *ppsBuf = NULL;
+	UINT16 spsLen = 0, ppsLen = 0;
+	NALUnit *nalu = NULL;
+
+	while (tag)
+	{
+		if (tag->m_tagType != TAG_TYPE_VIDEO)
+		{
+			tag = tag->m_nextTag;
+			continue;
+		}
+
+		CVideoTag *videoTagPtr = dynamic_cast<CVideoTag *>(tag);
+		if (NULL != videoTagPtr)
+		{
+			if (videoTagPtr->m_AVCPacketType == 0)
+			{
+				if (videoTagPtr->m_decCfgRcrd)
+				{
+					spsBuf = videoTagPtr->m_decCfgRcrd->sps->naluBuffer;
+					spsLen = videoTagPtr->m_decCfgRcrd->sps->naluLength;
+
+					ppsBuf = videoTagPtr->m_decCfgRcrd->pps->naluBuffer;
+					ppsLen = videoTagPtr->m_decCfgRcrd->pps->naluLength;
+
+					//write sps...
+					write_nalu(spsBuf, spsLen);
+
+					//write pps...
+					write_nalu(ppsBuf, ppsLen);
+				}
+			} 
+			else
+			{
+				nalu = videoTagPtr->m_nalu;
+				if (!nalu)
+				{
+					tag = tag->m_nextTag;
+					continue;
+				}
+
+				do
+				{
+					write_nalu(nalu->naluBuffer, nalu->naluLength);
+					nalu = nalu->nextNalu;
+				} while (nalu);
+			}
+		}
+		tag = tag->m_nextTag;
+	}
+
+	m_outputH264Stream.close();
+	return kFlvParserError_NoError;
+}
+
 int CFlvWriter::write_tag(CFlvTag *tag)
 {
 	BYTE streamID[3] = { 0 };
@@ -386,4 +477,25 @@ int CFlvWriter::write_tag(CFlvTag *tag)
 	m_outputFileStream.flush();
 
 	return kFlvParserError_NoError;
+}
+
+int CFlvWriter::write_nalu(BYTE *nalBuffer, UINT32 nalLen)
+{
+	UINT8 prefix[4] = { 0, 0, 0, 1 };
+
+	m_outputH264Stream.write(reinterpret_cast<const char*>(prefix), 4 * sizeof(BYTE));
+	if ((m_outputH264Stream.rdstate() & ifstream::failbit) || (m_outputH264Stream.rdstate() & ifstream::badbit))
+	{
+		m_outputH264Stream.close();
+		return kFlvParserError_WriteOutputFileFailed;
+	}
+	m_outputH264Stream.flush();
+
+	m_outputH264Stream.write(reinterpret_cast<const char*>(nalBuffer), nalLen * sizeof(BYTE));
+	if ((m_outputH264Stream.rdstate() & ifstream::failbit) || (m_outputH264Stream.rdstate() & ifstream::badbit))
+	{
+		m_outputH264Stream.close();
+		return kFlvParserError_WriteOutputFileFailed;
+	}
+	m_outputH264Stream.flush();
 }

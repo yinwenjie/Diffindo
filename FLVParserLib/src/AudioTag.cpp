@@ -57,22 +57,28 @@ void CAudioTag::Dump_audio_tag_info()
 #if DUMP_TAG_INFO_ENABLED_LOG
 
 #if DUMP_AUDIO_TAG_INFO_ENABLED_LOG
-	int soundRateArr[4] = { 5500, 11000, 22000, 44000 };
-	g_logoutFile << "Sound Format: " << to_string(m_soundFormat) << endl;
-	g_logoutFile << "Sound Rate: " << to_string(soundRateArr[m_soundRate]) << endl;
-	g_logoutFile << "Sound Size: " << (m_soundSize ? "8 bits" : "16 bits") << endl;
-	g_logoutFile << "Sound Type: " << (m_soundType ? "Stereo" : "Mono") << endl;
-	if (10 == m_soundFormat)
+	if (g_config.flvLogLevel >= 1)
 	{
-		g_logoutFile << "AAC Packet Type: " << (m_aacPacketType ? "AAC raw" : "AAC sequence header") << endl;
+		int soundRateArr[4] = { 5500, 11000, 22000, 44000 };
+		g_logoutFile << "Sound Format: " << to_string(m_soundFormat) << endl;
+		g_logoutFile << "Sound Rate: " << to_string(soundRateArr[m_soundRate]) << endl;
+		g_logoutFile << "Sound Size: " << (m_soundSize ? "8 bits" : "16 bits") << endl;
+		g_logoutFile << "Sound Type: " << (m_soundType ? "Stereo" : "Mono") << endl;
+		if (10 == m_soundFormat)
+		{
+			g_logoutFile << "AAC Packet Type: " << (m_aacPacketType ? "AAC raw" : "AAC sequence header") << endl;
+		}
 	}
 
-	if (m_audioSpecCfg)
+	if (g_config.flvLogLevel == 2)
 	{
-		g_logoutFile << "AudioObjectType: " << to_string(m_audioSpecCfg->audioObjectType) << endl;
-		g_logoutFile << "samplingFrequencyIndex: " << to_string(m_audioSpecCfg->samplingFrequencyIndex) << endl;
-		g_logoutFile << "samplingFrequency: " << to_string(m_audioSpecCfg->samplingFrequency) << endl;
-		g_logoutFile << "channelConfiguration: " << to_string(m_audioSpecCfg->channelConfiguration) << endl;
+		if (m_audioSpecCfg)
+		{
+			g_logoutFile << "AudioObjectType: " << to_string(m_audioSpecCfg->audioObjectType) << endl;
+			g_logoutFile << "samplingFrequencyIndex: " << to_string(m_audioSpecCfg->samplingFrequencyIndex) << endl;
+			g_logoutFile << "samplingFrequency: " << to_string(m_audioSpecCfg->samplingFrequency) << endl;
+			g_logoutFile << "channelConfiguration: " << to_string(m_audioSpecCfg->channelConfiguration) << endl;
+		}
 	}
 #endif
 

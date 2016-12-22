@@ -81,10 +81,13 @@ void CVideoTag::Dump_video_tag_info()
 #if DUMP_TAG_INFO_ENABLED_LOG
 
 #if DUMP_VIDEO_TAG_INFO_ENABLED_LOG
-	g_logoutFile << "Frame Type: " << to_string(m_frameType) << endl;
-	g_logoutFile << "Codec ID: " << to_string(m_codecID) << endl;
-	g_logoutFile << "AVCPacketType: " << to_string(m_AVCPacketType) << endl;
-	g_logoutFile << "CompositionTime: " << to_string(m_CompositionTime) << endl;
+	if (g_config.flvLogLevel >= 1)
+	{
+		g_logoutFile << "Frame Type: " << to_string(m_frameType) << endl;
+		g_logoutFile << "Codec ID: " << to_string(m_codecID) << endl;
+		g_logoutFile << "AVCPacketType: " << to_string(m_AVCPacketType) << endl;
+		g_logoutFile << "CompositionTime: " << to_string(m_CompositionTime) << endl;
+	}	
 #endif
 
 #if DUMP_VIDEO_TAG_PAYLOAD_INFO
@@ -96,24 +99,27 @@ void CVideoTag::Dump_video_tag_info()
 
 void CVideoTag::dump_video_payload_info()
 {
-	if (m_AVCPacketType == 0)
+	if (g_config.flvLogLevel == 2)
 	{
+		if (m_AVCPacketType == 0)
+		{
 #if DUMP_DECODER_CONFIG_RECORD_LOG
-		g_logoutFile << "Configuration Version: " << to_string(m_decCfgRcrd->configurationVersion) << endl;
-		g_logoutFile << "AVC Profile: " << to_string(m_decCfgRcrd->AVCProfileIndication) << endl;
-		g_logoutFile << "Profile Compatibility: " << to_string(m_decCfgRcrd->profile_compatibility) << endl;
-		g_logoutFile << "AVC Level: " << to_string(m_decCfgRcrd->AVCLevelIndication) << endl;
-		g_logoutFile << "NALU Length Size: " << to_string(m_decCfgRcrd->lengthSize) << endl;
-		g_logoutFile << "Number of SPS: " << to_string(m_decCfgRcrd->numSPS) << endl;
-		g_logoutFile << "Number of PPS: " << to_string(m_decCfgRcrd->numPPS) << endl;
+			g_logoutFile << "Configuration Version: " << to_string(m_decCfgRcrd->configurationVersion) << endl;
+			g_logoutFile << "AVC Profile: " << to_string(m_decCfgRcrd->AVCProfileIndication) << endl;
+			g_logoutFile << "Profile Compatibility: " << to_string(m_decCfgRcrd->profile_compatibility) << endl;
+			g_logoutFile << "AVC Level: " << to_string(m_decCfgRcrd->AVCLevelIndication) << endl;
+			g_logoutFile << "NALU Length Size: " << to_string(m_decCfgRcrd->lengthSize) << endl;
+			g_logoutFile << "Number of SPS: " << to_string(m_decCfgRcrd->numSPS) << endl;
+			g_logoutFile << "Number of PPS: " << to_string(m_decCfgRcrd->numPPS) << endl;
 #endif
-	}
-	else
-	{
+		}
+		else
+		{
 #if DUMP_NAL_UNIT_INFO_LOG
-		dump_nal_units_info();
+			dump_nal_units_info();
 #endif
-	}
+		}
+	}	
 }
 
 int CVideoTag::parse_nal_units()

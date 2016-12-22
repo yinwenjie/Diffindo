@@ -13,6 +13,8 @@
 
 #include "Include.h"
 
+extern FLVPARSERLIB_API RuntimeConfiguration g_config;
+
 // Flv tag types definition...
 #define TAG_TYPE_AUDIO 8
 #define TAG_TYPE_VIDEO 9
@@ -80,11 +82,15 @@ public:
 	int Clone_FLV_with_video();
 	int Clone_with_tag_index_range(UINT32 startIdx, UINT32 endIdx);
 	int Clone_with_tag_time_stamp_range(UINT32 startTS, UINT32 endTS);
+	int Clone_with_accelerating_factor(double factor);
+	int Extract_H264_raw_stream();
 
 private:
 	const CFlvParser *m_parser;
 	const char *m_outputFileName;
 	std::ofstream m_outputFileStream;
+	std::ofstream m_outputH264Stream;
 
 	int write_tag(CFlvTag *tag);
+	int write_nalu(BYTE *nalBuffer, UINT32 nalLen);	//Write nal unit to output file
 };
