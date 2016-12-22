@@ -10,7 +10,7 @@ if (argc == 3)
 	int err = 0;
 	CFlvParser flvParser(argv[1]);
 	err = flvParser.Parse();
-	if (err = 0)
+	if (err < 0)
 	{
 		printf("Error code: %d\n", err);
 		return -1;

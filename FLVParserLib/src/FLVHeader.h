@@ -13,7 +13,9 @@ typedef struct FlvHeader
 
 	FlvHeader()
 	{
-		signature[3] = { 0 };
+		signature[0] = 'F';
+		signature[1] = 'L';
+		signature[2] = 'V';
 		version = 0;
 		videoFlag = false;
 		audioFlag = false;

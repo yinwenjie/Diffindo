@@ -268,7 +268,7 @@ int CFlvWriter::Clone_FLV_with_video()
 
 int CFlvWriter::Clone_with_tag_index_range(UINT32 startIdx, UINT32 endIdx)
 {
-	if (startIdx < 0 || startIdx > endIdx)
+	if (startIdx > endIdx)
 	{
 		return kFlvParserError_IllegalFlvWriterIdxRange;
 	}
@@ -297,7 +297,7 @@ int CFlvWriter::Clone_with_tag_index_range(UINT32 startIdx, UINT32 endIdx)
 
 int CFlvWriter::Clone_with_tag_time_stamp_range(UINT32 startTS, UINT32 endTS)
 {
-	if (startTS < 0 || startTS > endTS)
+	if (startTS > endTS)
 	{
 		return kFlvParserError_IllegalFlvWriterIdxTimeStamp;
 	}
@@ -498,4 +498,6 @@ int CFlvWriter::write_nalu(BYTE *nalBuffer, UINT32 nalLen)
 		return kFlvParserError_WriteOutputFileFailed;
 	}
 	m_outputH264Stream.flush();
+
+	return kFlvParserError_NoError;
 }
