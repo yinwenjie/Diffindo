@@ -23,6 +23,16 @@ CMP4Parser::~CMP4Parser()
 
 int CMP4Parser::Parse()
 {
-	return 0;
+	return kMP4ParserError_NoError;
+}
+
+int CMP4Parser::open_input_file()
+{
+	return kMP4ParserError_NoError;
+}
+
+void CMP4Parser::close_input_file()
+{
+
 }
 
