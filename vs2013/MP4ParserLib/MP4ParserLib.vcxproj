@@ -80,13 +80,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\MP4ParserLib\src\Box.h" />
+    <ClInclude Include="..\..\MP4ParserLib\src\Configuration.h" />
     <ClInclude Include="..\..\MP4ParserLib\src\DataTypes.h" />
     <ClInclude Include="..\..\MP4ParserLib\src\GlobalUtils.h" />
     <ClInclude Include="..\..\MP4ParserLib\src\Include.h" />
+    <ClInclude Include="..\..\MP4ParserLib\src\MP4File.h" />
     <ClInclude Include="..\..\MP4ParserLib\src\MP4ParserLib.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\MP4ParserLib\src\Box.cpp" />
     <ClCompile Include="..\..\MP4ParserLib\src\GlobalUtils.cpp" />
+    <ClCompile Include="..\..\MP4ParserLib\src\MP4File.cpp" />
     <ClCompile Include="..\..\MP4ParserLib\src\MP4ParserLib.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -7,18 +7,33 @@
     <Filter Include="1.Lib">
       <UniqueIdentifier>{fb91dc2c-b9df-4f15-9ac4-ede78a91b61b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="2.File">
+      <UniqueIdentifier>{79c56cbf-dd95-46f6-a0ad-da01ef772815}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3.Box">
+      <UniqueIdentifier>{6139df63-2482-4056-aa4c-4a91b52cabeb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\MP4ParserLib\src\DataTypes.h">
-      <Filter>0.Global</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\MP4ParserLib\src\Include.h">
       <Filter>0.Global</Filter>
     </ClInclude>
     <ClInclude Include="..\..\MP4ParserLib\src\MP4ParserLib.h">
       <Filter>1.Lib</Filter>
     </ClInclude>
     <ClInclude Include="..\..\MP4ParserLib\src\GlobalUtils.h">
+      <Filter>0.Global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MP4ParserLib\src\MP4File.h">
+      <Filter>2.File</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MP4ParserLib\src\Box.h">
+      <Filter>3.Box</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MP4ParserLib\src\Configuration.h">
+      <Filter>0.Global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MP4ParserLib\src\Include.h">
       <Filter>0.Global</Filter>
     </ClInclude>
   </ItemGroup>
@@ -28,6 +43,12 @@
     </ClCompile>
     <ClCompile Include="..\..\MP4ParserLib\src\GlobalUtils.cpp">
       <Filter>0.Global</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MP4ParserLib\src\MP4File.cpp">
+      <Filter>2.File</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MP4ParserLib\src\Box.cpp">
+      <Filter>3.Box</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
