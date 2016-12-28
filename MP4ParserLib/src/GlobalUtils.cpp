@@ -3,25 +3,41 @@
 
 std::ofstream g_logoutFile; //输出日志文件对象
 
-UINT32 Get_lsb_uint32_value(BYTE *buf)
+UINT16 Get_lsb_uint16_value(BYTE *buf, UINT64 &offset)
 {
-	UINT32 val = 0;
-	for (int idx = 0; idx < 4; idx++)
-	{
-		val += buf[idx] << (3 - idx) * 8;
-	}
+	UINT16 val = 0;
+	BYTE *payloadBuf = buf + offset;
 
+	val += (payloadBuf[0] << 8);
+	val += payloadBuf[1];
+
+	offset += 2;
 	return val;
 }
 
-UINT64 Get_lsb_uint64_value(BYTE *buf)
+UINT32 Get_lsb_uint32_value(BYTE *buf, UINT64 &offset)
 {
 	UINT32 val = 0;
-	for (int idx = 0; idx < 8; idx++)
+	BYTE *payloadBuf = buf + offset;
+	for (int idx = 0; idx < 4; idx++)
 	{
-		val += buf[idx] << (7 - idx);
+		val += payloadBuf[idx] << (3 - idx) * 8;
 	}
 
+	offset += 4;
+	return val;
+}
+
+UINT64 Get_lsb_uint64_value(BYTE *buf, UINT64 &offset)
+{
+	UINT32 val = 0;
+	BYTE *payloadBuf = buf + offset;
+	for (int idx = 0; idx < 8; idx++)
+	{
+		val += payloadBuf[idx] << (7 - idx);
+	}
+
+	offset += 8;
 	return val;
 }
 
