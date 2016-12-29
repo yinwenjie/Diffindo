@@ -22,7 +22,7 @@ typedef struct Box
 	}
 	int Get_box_struct();
 	void Dump_box_info();
-};
+}Box;
 
 typedef struct FullBox : public Box
 {
@@ -35,7 +35,7 @@ typedef struct FullBox : public Box
 	}
 	int Get_full_box_struct();
 	void Dump_full_box_info();
-};
+}FullBox;
 
 // File Type Box 
 typedef struct FileTypeBox : public Box
@@ -161,15 +161,209 @@ typedef struct EditBox : public Box
 	int Get_edit_box(UINT64 &bytePosition);
 } EditBox;
 
+// Media Header Box
+typedef struct MediaHeaderBox : public FullBox
+{
+	UINT64 creationTime;
+	UINT64 modificationTime;
+	UINT32 timeScale;
+	UINT64 duration;
+
+	UINT32 languageCode;
+
+	MediaHeaderBox(BYTE *buf) : FullBox(buf)
+	{
+		creationTime = 0;
+		modificationTime = 0;
+		timeScale = 0;
+		duration = 0;
+		languageCode = 0;
+	}
+
+	int Get_media_header(UINT64 &bytePosition);
+	void Dump_media_header_info();
+}MediaHeaderBox;
+
+// Handler Reference Box
+typedef struct Handlerbox : public FullBox
+{
+	UINT32 handlerType;
+	char *name;
+	Handlerbox(BYTE *buf) : FullBox(buf)
+	{
+		handlerType = 0;
+		name = NULL;
+	}
+	~Handlerbox()
+	{
+		if (name)
+		{
+			delete name;
+			name = NULL;
+		}
+	}
+	int Get_handler_box(UINT64 &bytePosition);
+	void Dump_handler_box_info();
+} Handlerbox;
+
+// vmhd box
+typedef struct VideoMediaHeaderBox : public FullBox
+{
+	UINT16 graphicsmode;
+	UINT16 opcolor[3];
+	VideoMediaHeaderBox(BYTE *buf) : FullBox(buf)
+	{
+		graphicsmode = 0;
+		memset(opcolor, 0, 3 * sizeof(UINT16));
+	}
+	int Get_video_media_header(UINT64 &bytePosition);
+	void Dump_video_media_header_info();
+} VideoMediaHeaderBox;
+
+// dref
+typedef struct DataReferenceBox : public FullBox
+{
+	UINT32 entryCount;
+	DataReferenceBox(BYTE *buf) : FullBox(buf)
+	{
+		entryCount = 0;
+	}
+	int Get_data_ref(UINT64 &bytePosition);
+	void Dump_data_ref_info();
+} DataReferenceBox;
+
+// dinf
+typedef struct DataInfoBox : public Box
+{
+	DataReferenceBox *drefBox;
+	DataInfoBox(BYTE *buf) : Box(buf)
+	{
+		drefBox = NULL;
+	}
+	~DataInfoBox()
+	{
+		if (drefBox)
+		{
+			delete drefBox;
+			drefBox = NULL;
+		}
+	}
+	int Get_data_info_box(UINT64 &bytePosition);
+} DataInfoBox;
+
+// stsd
+typedef struct SampleDescriptionBox : public FullBox
+{
+	UINT32 entryCount;
+	SampleDescriptionBox(BYTE *buf) : FullBox(buf)
+	{
+		entryCount = 0;
+	}
+	~SampleDescriptionBox()
+	{
+
+	}
+
+	int Get_sample_description_box(UINT64 &bytePosition);
+	void Dump_sample_description_info();
+} SampleDescriptionBox;
+
+// stbl
+typedef struct SampleTableBox : public Box
+{
+	SampleDescriptionBox	*stsdBox;
+	SampleTableBox(BYTE *buf) : Box(buf)
+	{
+		stsdBox = NULL;
+	}
+	~SampleTableBox()
+	{
+		if (stsdBox)
+		{
+			delete stsdBox;
+			stsdBox = NULL;
+		}
+	}
+	int Get_sample_table(UINT64 &bytePosition);
+}SampleTableBox;
+
+// minf
+typedef struct MediaInfoBox : public Box
+{
+	VideoMediaHeaderBox		*vmhdBox;
+	DataInfoBox				*dinfBox;
+	SampleTableBox			*stblBox;
+	MediaInfoBox(BYTE *buf) : Box(buf)
+	{
+		vmhdBox = NULL;
+		dinfBox = NULL;
+		stblBox = NULL;
+	}
+	~MediaInfoBox()
+	{
+		if (vmhdBox)
+		{
+			delete vmhdBox;
+			vmhdBox = NULL;
+		}
+		if (dinfBox)
+		{
+			delete dinfBox;
+			dinfBox = NULL;
+		}
+		if (stblBox)
+		{
+			delete stblBox;
+			stblBox = NULL;
+		}
+	}
+	int Get_media_info_box(UINT64 &bytePosition);
+} MediaInfoBox;
+
+// Media Box
+typedef struct MediaBox : public Box
+{
+	MediaHeaderBox	*mdhdBox;
+	Handlerbox		*hdlrBox;
+	MediaInfoBox	*minfBox;
+	MediaBox(BYTE *buf) : Box(buf)
+	{
+		mdhdBox = NULL;
+		hdlrBox = NULL;
+		minfBox = NULL;
+	}
+	~MediaBox()
+	{
+		if (mdhdBox)
+		{
+			delete mdhdBox;
+			mdhdBox = NULL;
+		}
+		if (hdlrBox)
+		{
+			delete hdlrBox;
+			hdlrBox = NULL;
+		}
+		if (minfBox)
+		{
+			delete minfBox;
+			minfBox = NULL;
+		}
+	}
+	int Get_media(UINT64 &bytePosition);
+}MediaBox;
+
 // Track Box
 typedef struct TrackBox : public Box
 {
 	TrackHeaderBox *tkhdBox;
 	EditBox *edtsBox;
+	MediaBox *mdiaBox;
 	TrackBox(BYTE *buf) : Box(buf)
 	{
 		tkhdBox = NULL;
 		edtsBox = NULL;
+		mdiaBox = NULL;
 	}
 	~TrackBox()
 	{
@@ -183,9 +377,14 @@ typedef struct TrackBox : public Box
 			delete edtsBox;
 			edtsBox = NULL;
 		}
+		if (mdiaBox)
+		{
+			delete mdiaBox;
+			mdiaBox = NULL;
+		}
 	}
 	int Get_track(UINT64 &bytePosition);
-};
+} TrackBox;
 
 // Movie Header Box
 typedef struct MovieHeaderBox : public FullBox

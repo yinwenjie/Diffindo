@@ -29,7 +29,6 @@ void Box::Dump_box_info()
 #if DUMP_MP4_INFO_ENABLED_LOG
 	g_logoutFile << "--------------------------------------------" << endl;
 	g_logoutFile << "Box Size: " << to_string(size) << endl;
-	UINT32_to_fourcc(boxType, forcc);
 	g_logoutFile << "Box Type: " << forcc << endl;
 #endif
 }
@@ -89,7 +88,7 @@ int FileTypeBox::Get_file_type_box(UINT64 &bytePosition)
 		}
 	}
 
-	bytePosition += usedBytesLength;
+	bytePosition += size;
 	return kMP4ParserError_NoError;
 }
 
@@ -151,7 +150,7 @@ int MovieBox::Get_movie_box(UINT64 &bytePosition)
 		trakBox->Get_track(usedBytesLength);
 	}
 
-	bytePosition += usedBytesLength;
+	bytePosition += size;
 	return kMP4ParserError_NoError;
 }
 
@@ -163,6 +162,7 @@ int MovieHeaderBox::Get_movie_header(UINT64 &bytePosition)
 	{
 		return err;
 	}
+	Dump_full_box_info();
 
 	if (version == 1)
 	{
@@ -191,14 +191,12 @@ int MovieHeaderBox::Get_movie_header(UINT64 &bytePosition)
 
 	nextTrackID = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
 
-	bytePosition += usedBytesLength;
+	bytePosition += size;
 	return kMP4ParserError_NoError;
 }
 
 void MovieHeaderBox::Dump_movie_header_info()
 {
-	Dump_full_box_info();
-
 	cout << "creationTime: " << to_string(creationTime) << endl;
 	cout << "modificationTime: " << to_string(modificationTime) << endl;
 	cout << "timeScale: " << to_string(timeScale) << endl;
@@ -231,6 +229,273 @@ void MovieHeaderBox::Dump_movie_header_info()
 #endif
 }
 
+int MediaHeaderBox::Get_media_header(UINT64 &bytePosition)
+{
+	int err = 0;
+	err = Get_full_box_struct();
+	if (err < 0)
+	{
+		return err;
+	}
+	Dump_full_box_info();
+
+	if (version == 1)
+	{
+		creationTime = Get_lsb_uint64_value(boxBuffer, usedBytesLength);
+		modificationTime = Get_lsb_uint64_value(boxBuffer, usedBytesLength);
+		timeScale = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+		duration = Get_lsb_uint64_value(boxBuffer, usedBytesLength);
+	}
+	else
+	{
+		creationTime = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+		modificationTime = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+		timeScale = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+		duration = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+	}
+	languageCode = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+	languageCode = (languageCode >> 16) & 0x7fff;
+
+	bytePosition += size;
+	return kMP4ParserError_NoError;
+}
+
+void MediaHeaderBox::Dump_media_header_info()
+{
+	cout << "creationTime: " << to_string(creationTime) << endl;
+	cout << "modificationTime: " << to_string(modificationTime) << endl;
+	cout << "timeScale: " << to_string(timeScale) << endl;
+	cout << "duration: " << to_string(duration) << endl;
+	cout << "language: " << to_string(languageCode) << endl;
+#if DUMP_MP4_INFO_ENABLED_LOG
+	g_logoutFile << "creationTime: " << to_string(creationTime) << endl;
+	g_logoutFile << "modificationTime: " << to_string(modificationTime) << endl;
+	g_logoutFile << "timeScale: " << to_string(timeScale) << endl;
+	g_logoutFile << "duration: " << to_string(duration) << endl;
+	g_logoutFile << "language: " << to_string(languageCode) << endl;
+#endif
+}
+
+int Handlerbox::Get_handler_box(UINT64 &bytePosition)
+{
+	int err = 0;
+	err = Get_full_box_struct();
+	if (err < 0)
+	{
+		return err;
+	}
+	Dump_full_box_info();
+
+	usedBytesLength += 4;
+	handlerType = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+	usedBytesLength += 12;
+
+	name = new char[size - usedBytesLength];
+	memcpy(name, boxBuffer + usedBytesLength, size - usedBytesLength);
+
+	bytePosition += size;
+	return kMP4ParserError_NoError;
+}
+
+void Handlerbox::Dump_handler_box_info()
+{
+	char forcc[5] = { 0 };
+	UINT32_to_fourcc(handlerType, forcc);
+
+	cout << "handler_type: " << forcc << endl;
+	cout << "name: " << name << endl;
+
+#if DUMP_MP4_INFO_ENABLED_LOG
+	g_logoutFile << "handler_type: " << forcc << endl;
+	g_logoutFile << "name: " << name << endl;
+#endif
+}
+
+// vmhd box...
+int VideoMediaHeaderBox::Get_video_media_header(UINT64 &bytePosition)
+{
+	int err = 0;
+	err = Get_full_box_struct();
+	if (err < 0)
+	{
+		return err;
+	}
+	Dump_full_box_info();
+
+	bytePosition += size;
+	return kMP4ParserError_NoError;
+}
+
+void VideoMediaHeaderBox::Dump_video_media_header_info()
+{
+	cout << "graphicsmode: " << to_string(graphicsmode) << endl;
+	cout << "opcolor: " << to_string(opcolor[0]) << " " << to_string(opcolor[1]) << " " << to_string(opcolor[2]) << endl;
+#if DUMP_MP4_INFO_ENABLED_LOG
+	g_logoutFile << "graphicsmode: " << to_string(graphicsmode) << endl;
+	g_logoutFile << "opcolor: " << to_string(opcolor[0]) << " " << to_string(opcolor[1]) << " " << to_string(opcolor[2]) << endl;
+#endif
+}
+
+// dref
+int DataReferenceBox::Get_data_ref(UINT64 &bytePosition)
+{
+	int err = 0;
+	err = Get_full_box_struct();
+	if (err < 0)
+	{
+		return err;
+	}
+	Dump_full_box_info();
+
+	entryCount = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+
+	bytePosition += size;
+	return kMP4ParserError_NoError;
+}
+
+void DataReferenceBox::Dump_data_ref_info()
+{
+	cout << "entry_count: " << to_string(entryCount) << endl;
+#if DUMP_MP4_INFO_ENABLED_LOG
+	g_logoutFile << "entry_count: " << to_string(entryCount) << endl;
+#endif
+}
+
+// dinf
+int DataInfoBox::Get_data_info_box(UINT64 &bytePosition)
+{
+	int err = 0;
+	err = Get_box_struct();
+	if (err < 0)
+	{
+		return err;
+	}
+	Dump_box_info();
+
+	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "dref"))
+	{
+		drefBox = new DataReferenceBox(boxBuffer + usedBytesLength);
+		drefBox->Get_data_ref(usedBytesLength);
+		drefBox->Dump_data_ref_info();
+	}
+
+	bytePosition += size;
+	return kMP4ParserError_NoError;
+}
+
+int SampleDescriptionBox::Get_sample_description_box(UINT64 &bytePosition)
+{
+	int err = 0;
+	err = Get_full_box_struct();
+	if (err < 0)
+	{
+		return err;
+	}
+	Dump_full_box_info();
+
+	entryCount = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+
+	bytePosition += size;
+	return kMP4ParserError_NoError;
+}
+
+void SampleDescriptionBox::Dump_sample_description_info()
+{
+	cout << "entry_count: " << to_string(entryCount) << endl;
+#if DUMP_MP4_INFO_ENABLED_LOG
+	g_logoutFile << "entry_count: " << to_string(entryCount) << endl;
+#endif
+}
+
+int SampleTableBox::Get_sample_table(UINT64 &bytePosition)
+{
+	int err = 0;
+	err = Get_box_struct();
+	if (err < 0)
+	{
+		return err;
+	}
+	Dump_box_info();
+
+	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "stsd"))
+	{
+		stsdBox = new SampleDescriptionBox(boxBuffer + usedBytesLength);
+		stsdBox->Get_sample_description_box(usedBytesLength);
+		stsdBox->Dump_sample_description_info();
+	}
+
+	bytePosition += size;
+	return kMP4ParserError_NoError;
+}
+
+// minf box...
+int MediaInfoBox::Get_media_info_box(UINT64 &bytePosition)
+{
+	int err = 0;
+	err = Get_box_struct();
+	if (err < 0)
+	{
+		return err;
+	}
+	Dump_box_info();
+
+	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "vmhd"))
+	{
+		vmhdBox = new VideoMediaHeaderBox(boxBuffer + usedBytesLength);
+		vmhdBox->Get_video_media_header(usedBytesLength);
+		vmhdBox->Dump_video_media_header_info();
+	}
+
+	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "dinf"))
+	{
+		dinfBox = new DataInfoBox(boxBuffer + usedBytesLength);
+		dinfBox->Get_data_info_box(usedBytesLength);
+	}
+
+	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "stbl"))
+	{
+		stblBox = new SampleTableBox(boxBuffer + usedBytesLength);
+		stblBox->Get_sample_table(usedBytesLength);
+	}
+
+	bytePosition += size;
+	return kMP4ParserError_NoError;
+}
+
+int MediaBox::Get_media(UINT64 &bytePosition)
+{
+	int err = 0;
+	err = Get_box_struct();
+	if (err < 0)
+	{
+		return err;
+	}
+	Dump_box_info();
+
+	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "mdhd"))
+	{
+		mdhdBox = new MediaHeaderBox(boxBuffer + usedBytesLength);
+		mdhdBox->Get_media_header(usedBytesLength);
+		mdhdBox->Dump_media_header_info();
+	}
+
+	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "hdlr"))
+	{
+		hdlrBox = new Handlerbox(boxBuffer + usedBytesLength);
+		hdlrBox->Get_handler_box(usedBytesLength);
+		hdlrBox->Dump_handler_box_info();
+	}
+
+	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "minf"))
+	{
+		minfBox = new MediaInfoBox(boxBuffer + usedBytesLength);
+		minfBox->Get_media_info_box(usedBytesLength);
+	}
+
+	bytePosition += size;
+	return kMP4ParserError_NoError;
+}
+
 int TrackBox::Get_track(UINT64 &bytePosition)
 {
 	int err = 0;
@@ -256,7 +521,14 @@ int TrackBox::Get_track(UINT64 &bytePosition)
 		edtsBox->Get_edit_box(usedBytesLength);
 	}
 
-	bytePosition += usedBytesLength;
+	// Parse mdia
+	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "mdia"))
+	{
+		mdiaBox = new MediaBox(boxBuffer + usedBytesLength);
+		mdiaBox->Get_media(usedBytesLength);
+	}
+
+	bytePosition += size;
 	return kMP4ParserError_NoError;
 }
 
@@ -300,7 +572,7 @@ int TrackHeaderBox::Get_track_header(UINT64 &bytePosition)
 	width = Get_lsb_uint32_value(boxBuffer, usedBytesLength) >> 16;
 	height = Get_lsb_uint32_value(boxBuffer, usedBytesLength) >> 16;
 
-	bytePosition += usedBytesLength;
+	bytePosition += size;
 	return kMP4ParserError_NoError;
 }
 
@@ -361,7 +633,7 @@ int EditBox::Get_edit_box(UINT64 &bytePosition)
 		elstBox->Dump_edit_list_info();
 	}
 
-	bytePosition += usedBytesLength;
+	bytePosition += size;
 	return kMP4ParserError_NoError;
 }
 
@@ -398,7 +670,7 @@ int EditListBox::Get_edit_list_box(UINT64 &bytePosition)
 		mediaRateFraction[idx] = Get_lsb_uint16_value(boxBuffer, usedBytesLength);
 	}
 
-	bytePosition += usedBytesLength;
+	bytePosition += size;
 	return kMP4ParserError_NoError;
 }
 
