@@ -143,12 +143,36 @@ int MovieBox::Get_movie_box(UINT64 &bytePosition)
 		mvhdBox->Dump_movie_header_info();
 	}
 
-	// Parse trak box...
-	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "trak"))
+	while (usedBytesLength < size)
 	{
-		trakBox = new TrackBox(boxBuffer + usedBytesLength);
-		trakBox->Get_track(usedBytesLength);
+		// Parse trak box...
+		if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "trak"))
+		{
+			trakBox = new TrackBox(boxBuffer + usedBytesLength);
+			trakBox->Get_track(usedBytesLength);
+		}
+
+		// Parse udta box...
+		if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "udta"))
+		{
+			udtaBox = new UserDataBox(boxBuffer + usedBytesLength);
+			udtaBox->Get_user_data_box(usedBytesLength);
+		}
 	}
+
+	bytePosition += size;
+	return kMP4ParserError_NoError;
+}
+
+int UserDataBox::Get_user_data_box(UINT64 &bytePosition)
+{
+	int err = 0;
+	err = Get_box_struct();
+	if (err < 0)
+	{
+		return err;
+	}
+	Dump_box_info();
 
 	bytePosition += size;
 	return kMP4ParserError_NoError;
@@ -336,6 +360,29 @@ void VideoMediaHeaderBox::Dump_video_media_header_info()
 #endif
 }
 
+// smhd
+int SoundMediaHeaderBox::Get_sound_media_header(UINT64 &bytePosition)
+{
+	int err = 0;
+	err = Get_full_box_struct();
+	if (err < 0)
+	{
+		return err;
+	}
+	Dump_full_box_info();
+
+	bytePosition += size;
+	return kMP4ParserError_NoError;
+}
+
+void SoundMediaHeaderBox::Dump_audio_media_header_info()
+{
+	cout << "balance: " << to_string(balance) << endl;
+#if DUMP_MP4_INFO_ENABLED_LOG
+	g_logoutFile << "balance: " << to_string(balance) << endl;
+#endif
+}
+
 // dref
 int DataReferenceBox::Get_data_ref(UINT64 &bytePosition)
 {
@@ -407,6 +454,113 @@ void SampleDescriptionBox::Dump_sample_description_info()
 #endif
 }
 
+int TimeToSampleBox::Get_time_to_sample_box(UINT64 &bytePosition)
+{
+	int err = 0;
+	err = Get_full_box_struct();
+	if (err < 0)
+	{
+		return err;
+	}
+	Dump_full_box_info();
+
+	entryCount = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+
+	bytePosition += size;
+	return kMP4ParserError_NoError;
+}
+
+int SyncSampleBox::Get_sync_sample_box(UINT64 &bytePosition)
+{
+	int err = 0;
+	err = Get_full_box_struct();
+	if (err < 0)
+	{
+		return err;
+	}
+	Dump_full_box_info();
+
+	entryCount = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+
+	bytePosition += size;
+	return kMP4ParserError_NoError;
+}
+
+int CompositionOffsetBox::Get_composition_offset_box(UINT64 &bytePosition)
+{
+	int err = 0;
+	err = Get_full_box_struct();
+	if (err < 0)
+	{
+		return err;
+	}
+	Dump_full_box_info();
+
+	entryCount = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+
+	bytePosition += size;
+	return kMP4ParserError_NoError;
+}
+
+int SampleToChunkBox::Get_sample_to_chunk_box(UINT64 &bytePosition)
+{
+	int err = 0;
+	err = Get_full_box_struct();
+	if (err < 0)
+	{
+		return err;
+	}
+	Dump_full_box_info();
+
+	entryCount = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+
+	bytePosition += size;
+	return kMP4ParserError_NoError;
+}
+
+int SampleSizeBox::Get_sample_size_box(UINT64 &bytePosition)
+{
+	int err = 0;
+	err = Get_full_box_struct();
+	if (err < 0)
+	{
+		return err;
+	}
+	Dump_full_box_info();
+
+	sampleSize = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+	sampleCount = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+
+	bytePosition += size;
+	return kMP4ParserError_NoError;
+}
+
+void SampleSizeBox::Dump_sample_size_info()
+{
+	cout << "sample_size: " << to_string(sampleSize) << endl;
+	cout << "sample_count: " << to_string(sampleCount) << endl;
+#if DUMP_MP4_INFO_ENABLED_LOG
+	g_logoutFile << "sample_size: " << to_string(sampleSize) << endl;
+	g_logoutFile << "sample_count: " << to_string(sampleCount) << endl;
+#endif
+}
+
+int ChunkOffsetBox::Get_chunk_offset_box(UINT64 &bytePosition)
+{
+	int err = 0;
+	err = Get_full_box_struct();
+	if (err < 0)
+	{
+		return err;
+	}
+	Dump_full_box_info();
+
+	entryCount = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+
+	bytePosition += size;
+	return kMP4ParserError_NoError;
+}
+
 int SampleTableBox::Get_sample_table(UINT64 &bytePosition)
 {
 	int err = 0;
@@ -422,6 +576,43 @@ int SampleTableBox::Get_sample_table(UINT64 &bytePosition)
 		stsdBox = new SampleDescriptionBox(boxBuffer + usedBytesLength);
 		stsdBox->Get_sample_description_box(usedBytesLength);
 		stsdBox->Dump_sample_description_info();
+	}
+
+	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "stts"))
+	{
+		sttsBox = new TimeToSampleBox(boxBuffer + usedBytesLength);
+		sttsBox->Get_time_to_sample_box(usedBytesLength);
+	}
+
+	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "stss"))
+	{
+		stssBox = new SyncSampleBox(boxBuffer + usedBytesLength);
+		stssBox->Get_sync_sample_box(usedBytesLength);
+	}
+
+	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "ctts"))
+	{
+		cttsBox = new CompositionOffsetBox(boxBuffer + usedBytesLength);
+		cttsBox->Get_composition_offset_box(usedBytesLength);
+	}
+
+	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "stsc"))
+	{
+		stscBox = new SampleToChunkBox(boxBuffer + usedBytesLength);
+		stscBox->Get_sample_to_chunk_box(usedBytesLength);
+	}
+
+	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "stsz"))
+	{
+		stszBox = new SampleSizeBox(boxBuffer + usedBytesLength);
+		stszBox->Get_sample_size_box(usedBytesLength);
+		stszBox->Dump_sample_size_info();
+	}
+
+	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "stco"))
+	{
+		stcoBox = new ChunkOffsetBox(boxBuffer + usedBytesLength);
+		stcoBox->Get_chunk_offset_box(usedBytesLength);
 	}
 
 	bytePosition += size;
@@ -444,6 +635,13 @@ int MediaInfoBox::Get_media_info_box(UINT64 &bytePosition)
 		vmhdBox = new VideoMediaHeaderBox(boxBuffer + usedBytesLength);
 		vmhdBox->Get_video_media_header(usedBytesLength);
 		vmhdBox->Dump_video_media_header_info();
+	}
+
+	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "smhd"))
+	{
+		smhdBox = new SoundMediaHeaderBox(boxBuffer + usedBytesLength);
+		smhdBox->Get_sound_media_header(usedBytesLength);
+		smhdBox->Dump_audio_media_header_info();
 	}
 
 	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "dinf"))

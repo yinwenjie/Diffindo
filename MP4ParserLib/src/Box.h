@@ -220,6 +220,19 @@ typedef struct VideoMediaHeaderBox : public FullBox
 	void Dump_video_media_header_info();
 } VideoMediaHeaderBox;
 
+// smhd
+typedef struct SoundMediaHeaderBox : public FullBox
+{
+	UINT16 balance;
+	SoundMediaHeaderBox(BYTE *buf) : FullBox(buf)
+	{
+		balance = 0;
+	}
+
+	int Get_sound_media_header(UINT64 &bytePosition);
+	void Dump_audio_media_header_info();
+}SoundMediaHeaderBox;
+
 // dref
 typedef struct DataReferenceBox : public FullBox
 {
@@ -268,13 +281,95 @@ typedef struct SampleDescriptionBox : public FullBox
 	void Dump_sample_description_info();
 } SampleDescriptionBox;
 
+// stts
+typedef struct TimeToSampleBox : public FullBox
+{
+	UINT32 entryCount;
+	TimeToSampleBox(BYTE *buf) : FullBox(buf)
+	{
+		entryCount = 0;
+	}
+	int Get_time_to_sample_box(UINT64 &bytePosition);
+}TimeToSampleBox;
+
+// stss
+typedef struct SyncSampleBox : public FullBox
+{
+	UINT32 entryCount;
+	SyncSampleBox(BYTE *buf) : FullBox(buf)
+	{
+		entryCount = 0;
+	}
+	int Get_sync_sample_box(UINT64 &bytePosition);
+}SyncSampleBox;
+
+// ctts
+typedef struct CompositionOffsetBox : public FullBox
+{
+	UINT32 entryCount;
+	CompositionOffsetBox(BYTE *buf) : FullBox(buf)
+	{
+		entryCount = 0;
+	}
+	int Get_composition_offset_box(UINT64 &bytePosition);
+} CompositionOffsetBox;
+
+// stsc
+typedef struct SampleToChunkBox : public FullBox
+{
+	UINT32 entryCount;
+	SampleToChunkBox(BYTE *buf) : FullBox(buf)
+	{
+		entryCount = 0;
+	}
+	int Get_sample_to_chunk_box(UINT64 &bytePosition);
+} SampleToChunkBox;
+
+// stsz
+typedef struct SampleSizeBox : public FullBox
+{
+	UINT32 sampleSize;
+	UINT32 sampleCount;
+	SampleSizeBox(BYTE *buf) : FullBox(buf)
+	{
+		sampleSize = 0;
+		sampleCount = 0;
+	}
+	int Get_sample_size_box(UINT64 &bytePosition);
+	void Dump_sample_size_info();
+} SampleSizeBox;
+
+// stco
+typedef struct ChunkOffsetBox : public FullBox
+{
+	UINT32 entryCount;
+	ChunkOffsetBox(BYTE *buf) : FullBox(buf)
+	{
+		entryCount = 0;
+	}
+	int Get_chunk_offset_box(UINT64 &bytePosition);
+}ChunkOffsetBox;
+
 // stbl
 typedef struct SampleTableBox : public Box
 {
 	SampleDescriptionBox	*stsdBox;
+	TimeToSampleBox			*sttsBox;
+	SyncSampleBox			*stssBox;
+	CompositionOffsetBox	*cttsBox;
+	SampleToChunkBox		*stscBox;
+	SampleSizeBox			*stszBox;
+	ChunkOffsetBox			*stcoBox;
+
 	SampleTableBox(BYTE *buf) : Box(buf)
 	{
 		stsdBox = NULL;
+		sttsBox = NULL;
+		stssBox = NULL;
+		cttsBox = NULL;
+		stscBox = NULL;
+		stszBox = NULL;
+		stcoBox = NULL;
 	}
 	~SampleTableBox()
 	{
@@ -282,6 +377,37 @@ typedef struct SampleTableBox : public Box
 		{
 			delete stsdBox;
 			stsdBox = NULL;
+		}
+
+		if (sttsBox)
+		{
+			delete sttsBox;
+			stsdBox = NULL;
+		}
+		if (stssBox)
+		{
+			delete stssBox;
+			stssBox = NULL;
+		}
+		if (cttsBox)
+		{
+			delete cttsBox;
+			cttsBox = NULL;
+		}
+		if (stscBox)
+		{
+			delete stscBox;
+			stscBox = NULL;
+		}
+		if (stszBox)
+		{
+			delete stszBox;
+			stszBox = NULL;
+		}
+		if (stcoBox)
+		{
+			delete stcoBox;
+			stcoBox = NULL;
 		}
 	}
 	int Get_sample_table(UINT64 &bytePosition);
@@ -291,11 +417,13 @@ typedef struct SampleTableBox : public Box
 typedef struct MediaInfoBox : public Box
 {
 	VideoMediaHeaderBox		*vmhdBox;
+	SoundMediaHeaderBox		*smhdBox;
 	DataInfoBox				*dinfBox;
 	SampleTableBox			*stblBox;
 	MediaInfoBox(BYTE *buf) : Box(buf)
 	{
 		vmhdBox = NULL;
+		smhdBox = NULL;
 		dinfBox = NULL;
 		stblBox = NULL;
 	}
@@ -305,6 +433,11 @@ typedef struct MediaInfoBox : public Box
 		{
 			delete vmhdBox;
 			vmhdBox = NULL;
+		}
+		if (smhdBox)
+		{
+			delete smhdBox;
+			smhdBox = NULL;
 		}
 		if (dinfBox)
 		{
@@ -320,7 +453,7 @@ typedef struct MediaInfoBox : public Box
 	int Get_media_info_box(UINT64 &bytePosition);
 } MediaInfoBox;
 
-// Media Box
+// mdia
 typedef struct MediaBox : public Box
 {
 	MediaHeaderBox	*mdhdBox;
@@ -353,7 +486,7 @@ typedef struct MediaBox : public Box
 	int Get_media(UINT64 &bytePosition);
 }MediaBox;
 
-// Track Box
+// trak
 typedef struct TrackBox : public Box
 {
 	TrackHeaderBox *tkhdBox;
@@ -386,7 +519,45 @@ typedef struct TrackBox : public Box
 	int Get_track(UINT64 &bytePosition);
 } TrackBox;
 
-// Movie Header Box
+// meta
+typedef struct MetaBox : public FullBox
+{
+	Handlerbox		*hdlrBox;
+	MetaBox(BYTE *buf) : FullBox(buf)
+	{
+		hdlrBox = NULL;
+	}
+	~MetaBox()
+	{
+		if (hdlrBox)
+		{
+			delete hdlrBox;
+			hdlrBox = NULL;
+		}
+	}
+	int Get_meta_box(UINT64 &bytePosition);
+}MetaBox;
+
+// udta
+typedef struct UserDataBox : public Box
+{
+	MetaBox *metaBox;
+	UserDataBox(BYTE *buf) : Box(buf)
+	{
+		metaBox = NULL;
+	}
+	~UserDataBox()
+	{
+		if (metaBox)
+		{
+			delete metaBox;
+			metaBox = NULL;
+		}
+	}
+	int Get_user_data_box(UINT64 &bytePosition);
+}UserDataBox;
+
+// mvhd
 typedef struct MovieHeaderBox : public FullBox
 {
 	UINT64 creationTime;
@@ -416,15 +587,17 @@ typedef struct MovieHeaderBox : public FullBox
 	void Dump_movie_header_info();
 } MovieHeaderBox;
 
-// Movie Box
+// moov
 typedef struct MovieBox : public Box
 {
 	MovieHeaderBox  *mvhdBox;
 	TrackBox		*trakBox;
+	UserDataBox		*udtaBox;
 	MovieBox(BYTE *buf) : Box(buf)
 	{
 		mvhdBox = NULL;
 		trakBox = NULL;
+		udtaBox = NULL;
 	}
 	~MovieBox()
 	{
@@ -437,6 +610,11 @@ typedef struct MovieBox : public Box
 		{
 			delete trakBox;
 			trakBox = NULL;
+		}
+		if (!udtaBox)
+		{
+			delete udtaBox;
+			udtaBox = NULL;
 		}
 	}
 	int Get_movie_box(UINT64 &bytePosition);
