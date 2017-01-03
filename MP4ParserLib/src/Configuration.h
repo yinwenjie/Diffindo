@@ -1,0 +1,6 @@
+#ifndef _CONFIGURATION_H_
+#define _CONFIGURATION_H_
+
+#define DUMP_MP4_INFO_ENABLED_LOG 1
+
+#endif

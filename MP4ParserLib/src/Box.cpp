@@ -465,9 +465,30 @@ int TimeToSampleBox::Get_time_to_sample_box(UINT64 &bytePosition)
 	Dump_full_box_info();
 
 	entryCount = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+	pSampleCount = new UINT32[entryCount];
+	pSampleDelta = new UINT32[entryCount];
+
+	for (int idx = 0; idx < entryCount; idx++)
+	{
+		pSampleCount[idx] = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+		pSampleDelta[idx] = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+	}
 
 	bytePosition += size;
 	return kMP4ParserError_NoError;
+}
+
+void TimeToSampleBox::Dump_time_to_sample_info()
+{
+	cout << "entry_count: " << to_string(entryCount) << endl;
+#if DUMP_MP4_INFO_ENABLED_LOG
+	g_logoutFile << "entry_count: " << to_string(entryCount) << endl;
+	for (int idx = 0; idx < entryCount; idx++)
+	{
+		g_logoutFile << to_string(idx) << "\t";
+		g_logoutFile << "sample_count: " << to_string(pSampleCount[idx]) << "	sample_delta: " << to_string(pSampleDelta[idx]) << endl;
+	}
+#endif
 }
 
 int SyncSampleBox::Get_sync_sample_box(UINT64 &bytePosition)
@@ -481,9 +502,27 @@ int SyncSampleBox::Get_sync_sample_box(UINT64 &bytePosition)
 	Dump_full_box_info();
 
 	entryCount = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+	pSampleNumber = new UINT32[entryCount];
+	for (int idx = 0; idx < entryCount; idx++)
+	{
+		pSampleNumber[idx] = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+	}
 
 	bytePosition += size;
 	return kMP4ParserError_NoError;
+}
+
+void SyncSampleBox::Dump_sync_sample_info()
+{
+	cout << "entry_count: " << to_string(entryCount) << endl;
+#if DUMP_MP4_INFO_ENABLED_LOG
+	g_logoutFile << "entry_count: " << to_string(entryCount) << endl;
+	for (int idx = 0; idx < entryCount; idx++)
+	{
+		g_logoutFile << to_string(idx) << "\t";
+		g_logoutFile << "sample_number: " << to_string(pSampleNumber[idx]) << endl;
+	}
+#endif
 }
 
 int CompositionOffsetBox::Get_composition_offset_box(UINT64 &bytePosition)
@@ -497,9 +536,29 @@ int CompositionOffsetBox::Get_composition_offset_box(UINT64 &bytePosition)
 	Dump_full_box_info();
 
 	entryCount = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+	pSampleCount = new UINT32[entryCount];
+	pSampleOffset = new UINT32[entryCount];
+	for (int idx = 0; idx < entryCount; idx++)
+	{
+		pSampleCount[idx] = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+		pSampleOffset[idx] = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+	}
 
 	bytePosition += size;
 	return kMP4ParserError_NoError;
+}
+
+void CompositionOffsetBox::Dump_composition_offset_info()
+{
+	cout << "entry_count: " << to_string(entryCount) << endl;
+#if DUMP_MP4_INFO_ENABLED_LOG
+	g_logoutFile << "entry_count: " << to_string(entryCount) << endl;
+	for (int idx = 0; idx < entryCount; idx++)
+	{
+		g_logoutFile << to_string(idx) << "\t";
+		g_logoutFile << "sample_count: " << to_string(pSampleCount[idx]) << "	sample_offset: " << to_string(pSampleOffset[idx]) << endl;
+	}
+#endif
 }
 
 int SampleToChunkBox::Get_sample_to_chunk_box(UINT64 &bytePosition)
@@ -513,9 +572,32 @@ int SampleToChunkBox::Get_sample_to_chunk_box(UINT64 &bytePosition)
 	Dump_full_box_info();
 
 	entryCount = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+	pFirstChunk = new UINT32[entryCount];
+	pSamplesPerChunk = new UINT32[entryCount];
+	pSampleDiscriptionIdx = new UINT32[entryCount];
+
+	for (int idx = 0; idx < entryCount; idx++)
+	{
+		pFirstChunk[idx] = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+		pSamplesPerChunk[idx] = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+		pSampleDiscriptionIdx[idx] = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+	}
 
 	bytePosition += size;
 	return kMP4ParserError_NoError;
+}
+
+void SampleToChunkBox::Dump_sample_to_chunk_info()
+{
+	cout << "entry_count: " << to_string(entryCount) << endl;
+#if DUMP_MP4_INFO_ENABLED_LOG
+	g_logoutFile << "entry_count: " << to_string(entryCount) << endl;
+	for (int idx = 0; idx < entryCount; idx++)
+	{
+		g_logoutFile << to_string(idx) << "\t";
+		g_logoutFile << "first_chunk: " << to_string(pFirstChunk[idx]) << "	samples_per_chunk: " << to_string(pSamplesPerChunk[idx])<< "	sample_description_index: " << to_string(pSampleDiscriptionIdx[idx]) << endl;
+	}
+#endif
 }
 
 int SampleSizeBox::Get_sample_size_box(UINT64 &bytePosition)
@@ -531,6 +613,15 @@ int SampleSizeBox::Get_sample_size_box(UINT64 &bytePosition)
 	sampleSize = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
 	sampleCount = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
 
+	if (sampleSize == 0)
+	{
+		pEntrySize = new UINT32[sampleCount];
+		for (int idx = 0; idx < sampleCount; idx++)
+		{
+			pEntrySize[idx] = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+		}
+	}
+
 	bytePosition += size;
 	return kMP4ParserError_NoError;
 }
@@ -542,6 +633,14 @@ void SampleSizeBox::Dump_sample_size_info()
 #if DUMP_MP4_INFO_ENABLED_LOG
 	g_logoutFile << "sample_size: " << to_string(sampleSize) << endl;
 	g_logoutFile << "sample_count: " << to_string(sampleCount) << endl;
+	if (sampleSize == 0)
+	{
+		for (int idx = 0; idx < sampleCount; idx++)
+		{
+			g_logoutFile << to_string(idx) << "\t";
+			g_logoutFile << "entry_size: " << to_string(pEntrySize[idx]) << endl;
+		}
+	}
 #endif
 }
 
@@ -556,9 +655,27 @@ int ChunkOffsetBox::Get_chunk_offset_box(UINT64 &bytePosition)
 	Dump_full_box_info();
 
 	entryCount = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+	pChunkOffset = new UINT32[entryCount];
+	for (int idx = 0; idx < entryCount; idx++)
+	{
+		pChunkOffset[idx] = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
+	}
 
 	bytePosition += size;
 	return kMP4ParserError_NoError;
+}
+
+void ChunkOffsetBox::Dump_chunk_offset_info()
+{
+	cout << "entry_count: " << to_string(entryCount) << endl;
+#if DUMP_MP4_INFO_ENABLED_LOG
+	g_logoutFile << "entry_count: " << to_string(entryCount) << endl;
+	for (int idx = 0; idx < entryCount; idx++)
+	{
+		g_logoutFile << to_string(idx) << "\t";
+		g_logoutFile << "chunk_offset: " << to_string(pChunkOffset[idx]) << endl;
+	}
+#endif
 }
 
 int SampleTableBox::Get_sample_table(UINT64 &bytePosition)
@@ -570,7 +687,7 @@ int SampleTableBox::Get_sample_table(UINT64 &bytePosition)
 		return err;
 	}
 	Dump_box_info();
-
+	
 	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "stsd"))
 	{
 		stsdBox = new SampleDescriptionBox(boxBuffer + usedBytesLength);
@@ -582,24 +699,28 @@ int SampleTableBox::Get_sample_table(UINT64 &bytePosition)
 	{
 		sttsBox = new TimeToSampleBox(boxBuffer + usedBytesLength);
 		sttsBox->Get_time_to_sample_box(usedBytesLength);
+		sttsBox->Dump_time_to_sample_info();
 	}
 
 	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "stss"))
 	{
 		stssBox = new SyncSampleBox(boxBuffer + usedBytesLength);
 		stssBox->Get_sync_sample_box(usedBytesLength);
+		stssBox->Dump_sync_sample_info();
 	}
 
 	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "ctts"))
 	{
 		cttsBox = new CompositionOffsetBox(boxBuffer + usedBytesLength);
 		cttsBox->Get_composition_offset_box(usedBytesLength);
+		cttsBox->Dump_composition_offset_info();
 	}
 
 	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "stsc"))
 	{
 		stscBox = new SampleToChunkBox(boxBuffer + usedBytesLength);
 		stscBox->Get_sample_to_chunk_box(usedBytesLength);
+		stscBox->Dump_sample_to_chunk_info();
 	}
 
 	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "stsz"))
@@ -613,6 +734,7 @@ int SampleTableBox::Get_sample_table(UINT64 &bytePosition)
 	{
 		stcoBox = new ChunkOffsetBox(boxBuffer + usedBytesLength);
 		stcoBox->Get_chunk_offset_box(usedBytesLength);
+		stcoBox->Dump_chunk_offset_info();
 	}
 
 	bytePosition += size;

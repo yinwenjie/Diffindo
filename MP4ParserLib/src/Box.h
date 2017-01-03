@@ -285,44 +285,116 @@ typedef struct SampleDescriptionBox : public FullBox
 typedef struct TimeToSampleBox : public FullBox
 {
 	UINT32 entryCount;
+	UINT32 *pSampleCount;
+	UINT32 *pSampleDelta;
 	TimeToSampleBox(BYTE *buf) : FullBox(buf)
 	{
 		entryCount = 0;
+		pSampleCount = NULL;
+		pSampleDelta = NULL;
+	}
+	~TimeToSampleBox()
+	{
+		if (pSampleCount)
+		{
+			delete[] pSampleCount;
+			pSampleCount = NULL;
+		}
+		if (pSampleDelta)
+		{
+			delete[] pSampleDelta;
+			pSampleDelta = NULL;
+		}
 	}
 	int Get_time_to_sample_box(UINT64 &bytePosition);
+	void Dump_time_to_sample_info();
 }TimeToSampleBox;
 
 // stss
 typedef struct SyncSampleBox : public FullBox
 {
 	UINT32 entryCount;
+	UINT32 *pSampleNumber;
 	SyncSampleBox(BYTE *buf) : FullBox(buf)
 	{
 		entryCount = 0;
+		pSampleNumber = NULL;
+	}
+	~SyncSampleBox()
+	{
+		if (pSampleNumber)
+		{
+			delete[] pSampleNumber;
+			pSampleNumber = NULL;
+		}
 	}
 	int Get_sync_sample_box(UINT64 &bytePosition);
+	void Dump_sync_sample_info();
 }SyncSampleBox;
 
 // ctts
 typedef struct CompositionOffsetBox : public FullBox
 {
 	UINT32 entryCount;
+	UINT32 *pSampleCount;
+	UINT32 *pSampleOffset;
 	CompositionOffsetBox(BYTE *buf) : FullBox(buf)
 	{
 		entryCount = 0;
+		pSampleCount = NULL;
+		pSampleOffset = NULL;
+	}
+	~CompositionOffsetBox()
+	{
+		if (pSampleCount)
+		{
+			delete[] pSampleCount;
+			pSampleCount = NULL;
+		}
+		if (pSampleOffset)
+		{
+			delete[] pSampleOffset;
+			pSampleOffset = NULL;
+		}
 	}
 	int Get_composition_offset_box(UINT64 &bytePosition);
+	void Dump_composition_offset_info();
 } CompositionOffsetBox;
 
 // stsc
 typedef struct SampleToChunkBox : public FullBox
 {
 	UINT32 entryCount;
+	UINT32 *pFirstChunk;
+	UINT32 *pSamplesPerChunk;
+	UINT32 *pSampleDiscriptionIdx;
 	SampleToChunkBox(BYTE *buf) : FullBox(buf)
 	{
 		entryCount = 0;
+		pFirstChunk = NULL;
+		pSamplesPerChunk = NULL;
+		pSampleDiscriptionIdx = NULL;
+	}
+	~SampleToChunkBox()
+	{
+		if (pFirstChunk)
+		{
+			delete[] pFirstChunk;
+			pFirstChunk = NULL;
+		}
+		if (pSamplesPerChunk)
+		{
+			delete[] pSamplesPerChunk;
+			pSamplesPerChunk = NULL;
+		}
+		if (pSampleDiscriptionIdx)
+		{
+			delete[] pSampleDiscriptionIdx;
+			pSampleDiscriptionIdx = NULL;
+		}
 	}
 	int Get_sample_to_chunk_box(UINT64 &bytePosition);
+	void Dump_sample_to_chunk_info();
 } SampleToChunkBox;
 
 // stsz
@@ -330,10 +402,20 @@ typedef struct SampleSizeBox : public FullBox
 {
 	UINT32 sampleSize;
 	UINT32 sampleCount;
+	UINT32 *pEntrySize;
 	SampleSizeBox(BYTE *buf) : FullBox(buf)
 	{
 		sampleSize = 0;
 		sampleCount = 0;
+		pEntrySize = NULL;
+	}
+	~SampleSizeBox()
+	{
+		if (pEntrySize)
+		{
+			delete[] pEntrySize;
+			pEntrySize = NULL;
+		}
 	}
 	int Get_sample_size_box(UINT64 &bytePosition);
 	void Dump_sample_size_info();
@@ -343,11 +425,22 @@ typedef struct SampleSizeBox : public FullBox
 typedef struct ChunkOffsetBox : public FullBox
 {
 	UINT32 entryCount;
+	UINT32 *pChunkOffset;
 	ChunkOffsetBox(BYTE *buf) : FullBox(buf)
 	{
 		entryCount = 0;
+		pChunkOffset = NULL;
+	}
+	~ChunkOffsetBox()
+	{
+		if (pChunkOffset)
+		{
+			delete[] pChunkOffset;
+			pChunkOffset = NULL;
+		}
 	}
 	int Get_chunk_offset_box(UINT64 &bytePosition);
+	void Dump_chunk_offset_info();
 }ChunkOffsetBox;
 
 // stbl

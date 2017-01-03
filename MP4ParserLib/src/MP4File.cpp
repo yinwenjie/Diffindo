@@ -63,5 +63,11 @@ int CMP4File::get_movie_box()
 		}
 	}
 
+	if (Fourcc_compare(m_fileBuffer + m_fileBytePosition + 4, "free"))
+	{
+		UINT32 freeboxSize = Get_lsb_uint32_value(m_fileBuffer, m_fileBytePosition);
+		m_fileBytePosition += (freeboxSize - 4);
+	}
+
 	return kMP4ParserError_NoError;
 }
