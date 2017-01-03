@@ -6,6 +6,10 @@
 #endif
 #endif
 
+#ifdef __GNUC__
+#define MP4PARSERLIB_API  
+#endif
+
 #include "Include.h"
 
 

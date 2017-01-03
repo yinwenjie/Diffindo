@@ -53,7 +53,7 @@ void UINT32_to_fourcc(UINT32 value, char *str)
 	str[4] = 0;
 }
 
-bool Fourcc_compare(BYTE *buf, char *str)
+bool Fourcc_compare(BYTE *buf, const char *str)
 {
 	for (int idx = 0; idx < 4; idx++)
 	{

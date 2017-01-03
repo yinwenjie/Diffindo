@@ -11,6 +11,6 @@ UINT64 Get_lsb_uint64_value(BYTE *buf, UINT64 &offset);
 
 void UINT32_to_fourcc(UINT32 value, char *str);
 
-bool Fourcc_compare(BYTE *buf, char *str);
+bool Fourcc_compare(BYTE *buf, const char *str);
 
 #endif
