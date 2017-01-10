@@ -135,6 +135,12 @@ int MovieBox::Get_movie_box(UINT64 &bytePosition)
 	}
 	Dump_box_info();
 
+	g_sampleInfoFile.open("samples.txt");
+	if (!g_sampleInfoFile.is_open())
+	{
+		return kMP4ParserError_OpenOutputFileFailed;
+	}
+
 	// Parse mvhd box...
 	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "mvhd"))
 	{
@@ -160,6 +166,10 @@ int MovieBox::Get_movie_box(UINT64 &bytePosition)
 		}
 	}
 
+	if (g_sampleInfoFile.is_open())
+	{
+		g_sampleInfoFile.close();
+	}
 	bytePosition += size;
 	return kMP4ParserError_NoError;
 }
@@ -687,6 +697,8 @@ int SampleTableBox::Get_sample_table(UINT64 &bytePosition)
 		return err;
 	}
 	Dump_box_info();
+
+	g_sampleInfoFile << "********************Sample Table*******************" << endl;
 	
 	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "stsd"))
 	{
@@ -737,8 +749,127 @@ int SampleTableBox::Get_sample_table(UINT64 &bytePosition)
 		stcoBox->Dump_chunk_offset_info();
 	}
 
+	Calculate_sample_info();
 	bytePosition += size;
 	return kMP4ParserError_NoError;
+}
+
+void SampleTableBox::Calculate_sample_info()
+{
+	UINT32 sampleCount = stszBox->sampleCount;
+		
+	sampleInfoArr = new SampleInfo[sampleCount];
+	memset(sampleInfoArr, 0, sampleCount * sizeof(SampleInfo));
+	
+	if (stszBox)
+	{
+		// sample size...
+		for (int idx = 0; idx < sampleCount; idx++)
+		{
+			sampleInfoArr[idx].sampleIndex = idx;
+			sampleInfoArr[idx].sampleSize = stszBox->pEntrySize[idx];
+		}
+	}	
+
+	// sample decoding time...
+	if (sttsBox)
+	{
+		int totalSampleCnt = 0;
+		for (int idx = 0; idx < sttsBox->entryCount; idx++)
+		{
+			int sub_idx = 0;
+			for (; sub_idx < sttsBox->pSampleCount[idx]; sub_idx++)
+			{
+				if (totalSampleCnt == 0 && sub_idx == 0)
+				{
+					sampleInfoArr[0].decodingTime = 0;
+				}
+				else
+				{
+					sampleInfoArr[totalSampleCnt + sub_idx].decodingTime = sttsBox->pSampleDelta[idx] + sampleInfoArr[totalSampleCnt + sub_idx - 1].decodingTime;
+				}
+			}
+			totalSampleCnt += sub_idx;
+		}
+	}
+
+	if (stssBox)
+	{
+		// key frame...
+		for (int idx = 0; idx < stssBox->entryCount; idx++)
+		{
+			sampleInfoArr[stssBox->pSampleNumber[idx]].keyFrame = true;
+		}
+	}
+
+	if (cttsBox)
+	{
+		// composition time...
+		int totalSampleCnt = 0;
+		for (int idx = 0; idx < cttsBox->entryCount; idx++)
+		{
+			int sub_idx = 0;
+			for (; sub_idx < cttsBox->pSampleCount[idx]; sub_idx++)
+			{
+				sampleInfoArr[totalSampleCnt + sub_idx].compositionTime = cttsBox->pSampleOffset[idx];
+			}
+			totalSampleCnt += sub_idx;
+		}
+	}
+
+	// chunk index & offset...
+	if (stscBox && stcoBox)
+	{
+		UINT32 *chunkNumbers = new UINT32[stscBox->entryCount];
+		memset(chunkNumbers, 0, sizeof (UINT32)* stscBox->entryCount);
+		UINT32 totalChunkIdx = 0, totalSampleIdx = 0, chunkFileOffset = 0;
+
+		int idx = 0;
+		for (; idx < stscBox->entryCount; idx++)
+		{
+			if (idx == stscBox->entryCount - 1)
+			{
+				chunkNumbers[idx] = stcoBox->entryCount - stscBox->pFirstChunk[idx - 1];
+			}
+			else
+			{
+				chunkNumbers[idx] = stscBox->pFirstChunk[idx + 1] - stscBox->pFirstChunk[idx];
+			}
+
+			for (int chunk_idx = 0; chunk_idx < chunkNumbers[idx]; chunk_idx++)
+			{
+				chunkFileOffset = stcoBox->pChunkOffset[totalChunkIdx + chunk_idx];
+				UINT32 offsetInChunk = 0;
+
+				for (int sample_idx = 0; sample_idx < stscBox->pSamplesPerChunk[idx]; sample_idx++)
+				{
+					sampleInfoArr[sample_idx + totalSampleIdx].chunkIndex = totalChunkIdx + chunk_idx;
+					sampleInfoArr[sample_idx + totalSampleIdx].fileBitOffset = chunkFileOffset + offsetInChunk;
+					offsetInChunk += sampleInfoArr[sample_idx + totalSampleIdx].sampleSize;
+				}
+				totalSampleIdx += stscBox->pSamplesPerChunk[idx];
+			}
+
+			totalChunkIdx += chunkNumbers[idx];
+		}
+
+		delete[] chunkNumbers;
+	}
+
+	// log out...
+	{
+		for (int idx = 0; idx < sampleCount; idx++)
+		{
+			g_sampleInfoFile << "Sample " << to_string(sampleInfoArr[idx].sampleIndex) << "";
+			g_sampleInfoFile << ";\t Sample Size: " << to_string(sampleInfoArr[idx].sampleSize);
+			g_sampleInfoFile << ";\t Chunk Index: " << to_string(sampleInfoArr[idx].chunkIndex);
+			g_sampleInfoFile << ";\t Key Frame: " << to_string(sampleInfoArr[idx].keyFrame);
+			g_sampleInfoFile << ";\t Decoding Time: " << to_string(sampleInfoArr[idx].decodingTime);
+			g_sampleInfoFile << ";\t Composition Time: " << to_string(sampleInfoArr[idx].compositionTime);
+			g_sampleInfoFile << ";\t File offset: " << to_string(sampleInfoArr[idx].fileBitOffset);
+			g_sampleInfoFile << endl;
+		}
+	}
 }
 
 // minf box...

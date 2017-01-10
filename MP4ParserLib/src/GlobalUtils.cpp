@@ -2,6 +2,7 @@
 #include "GlobalUtils.h"
 
 std::ofstream g_logoutFile; //输出日志文件对象
+std::ofstream g_sampleInfoFile;//mp4 sample信息日志文件对象
 
 UINT16 Get_lsb_uint16_value(BYTE *buf, UINT64 &offset)
 {

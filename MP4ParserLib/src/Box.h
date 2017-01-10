@@ -3,6 +3,17 @@
 
 #include "Include.h"
 
+typedef struct SampleInfo
+{
+	UINT32 sampleIndex;
+	UINT32 sampleSize;
+	UINT32 chunkIndex;
+	bool   keyFrame;
+	UINT32 decodingTime;
+	UINT32 compositionTime;
+	UINT32 fileBitOffset;
+} SampleInfo;
+
 typedef struct Box
 {
 	BYTE *boxBuffer;
@@ -454,6 +465,8 @@ typedef struct SampleTableBox : public Box
 	SampleSizeBox			*stszBox;
 	ChunkOffsetBox			*stcoBox;
 
+	SampleInfo				*sampleInfoArr;
+
 	SampleTableBox(BYTE *buf) : Box(buf)
 	{
 		stsdBox = NULL;
@@ -463,6 +476,8 @@ typedef struct SampleTableBox : public Box
 		stscBox = NULL;
 		stszBox = NULL;
 		stcoBox = NULL;
+
+		sampleInfoArr = NULL;
 	}
 	~SampleTableBox()
 	{
@@ -502,8 +517,14 @@ typedef struct SampleTableBox : public Box
 			delete stcoBox;
 			stcoBox = NULL;
 		}
+		if (sampleInfoArr)
+		{
+			delete[] sampleInfoArr;
+			sampleInfoArr = NULL;
+		}
 	}
 	int Get_sample_table(UINT64 &bytePosition);
+	void Calculate_sample_info();
 }SampleTableBox;
 
 // minf

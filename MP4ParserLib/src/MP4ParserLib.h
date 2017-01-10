@@ -18,6 +18,7 @@ const int kMP4ParserError_NoError = 0;
 const int kMP4ParserError_NullFileName = -1;
 const int kMP4ParserError_OpenInputFileFailed = -2;
 const int kMP4ParserError_ReadInputFileFailed = -3;
+const int kMP4ParserError_OpenOutputFileFailed = -4;
 
 class CMP4File;
 class MP4PARSERLIB_API CMP4Parser
