@@ -81,7 +81,7 @@ void CVideoTag::Dump_video_tag_info()
 #if DUMP_TAG_INFO_ENABLED_LOG
 
 #if DUMP_VIDEO_TAG_INFO_ENABLED_LOG
-	if (g_config.flvLogLevel >= 1)
+	if (g_flvConfig.flvLogLevel >= 1)
 	{
 		g_logoutFile << "Frame Type: " << to_string(m_frameType) << endl;
 		g_logoutFile << "Codec ID: " << to_string(m_codecID) << endl;
@@ -99,7 +99,7 @@ void CVideoTag::Dump_video_tag_info()
 
 void CVideoTag::dump_video_payload_info()
 {
-	if (g_config.flvLogLevel == 2)
+	if (g_flvConfig.flvLogLevel == 2)
 	{
 		if (m_AVCPacketType == 0)
 		{

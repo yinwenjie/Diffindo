@@ -13,7 +13,7 @@
 
 #include "Include.h"
 
-extern FLVPARSERLIB_API RuntimeConfiguration g_config;
+extern FLVPARSERLIB_API FLVRuntimeConfiguration g_flvConfig;
 
 // Flv tag types definition...
 #define TAG_TYPE_AUDIO 8

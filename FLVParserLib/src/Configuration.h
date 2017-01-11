@@ -19,13 +19,13 @@
 #define DUMP_SCRIPT_INFO_ENABLED_LOG 1					//在日志文件中输出视频script信息
 #define DUMP_SCRIPT_INFO_ENABLED_CONSOLE 1				//控制台窗口输出Script Tag详细信息
 
-typedef struct RuntimeConfiguration
+typedef struct FLVRuntimeConfiguration
 {
 	UINT8 flvLogLevel;		// 0:Flv tag;	1:Video/Audio tag;	2:Video/Audio payload
-	RuntimeConfiguration()
+	FLVRuntimeConfiguration()
 	{
 		flvLogLevel = 0;
 	}
-} RuntimeConfiguration;
+} FLVRuntimeConfiguration;
 
 #endif // _CONFIGURATION_H_

@@ -9,7 +9,7 @@
 
 using namespace std;
 
-FLVPARSERLIB_API RuntimeConfiguration g_config;
+FLVPARSERLIB_API FLVRuntimeConfiguration g_flvConfig;
 
 CFlvParser::CFlvParser(const char *fileName)
 {

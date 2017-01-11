@@ -3,6 +3,8 @@
 
 using namespace std;
 
+MP4PARSERLIB_API MP4RuntimeConfiguration g_mp4Config;
+
 CMP4Parser::CMP4Parser(const char *inputMP4FileName)
 {
 	m_fileName = inputMP4FileName;

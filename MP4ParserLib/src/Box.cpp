@@ -135,10 +135,13 @@ int MovieBox::Get_movie_box(UINT64 &bytePosition)
 	}
 	Dump_box_info();
 
-	g_sampleInfoFile.open("samples.txt");
-	if (!g_sampleInfoFile.is_open())
+	if (g_mp4Config.mp4Configlevel > 1)
 	{
-		return kMP4ParserError_OpenOutputFileFailed;
+		g_sampleInfoFile.open("samples.txt");
+		if (!g_sampleInfoFile.is_open())
+		{
+			return kMP4ParserError_OpenOutputFileFailed;
+		}
 	}
 
 	// Parse mvhd box...
@@ -166,9 +169,12 @@ int MovieBox::Get_movie_box(UINT64 &bytePosition)
 		}
 	}
 
-	if (g_sampleInfoFile.is_open())
+	if (g_mp4Config.mp4Configlevel > 1)
 	{
-		g_sampleInfoFile.close();
+		if (g_sampleInfoFile.is_open())
+		{
+			g_sampleInfoFile.close();
+		}
 	}
 	bytePosition += size;
 	return kMP4ParserError_NoError;
@@ -247,22 +253,27 @@ void MovieHeaderBox::Dump_movie_header_info()
 
 #if DUMP_MP4_INFO_ENABLED_LOG
 
-	g_logoutFile << "creationTime: " << to_string(creationTime) << endl;
-	g_logoutFile << "modificationTime: " << to_string(modificationTime) << endl;
-	g_logoutFile << "timeScale: " << to_string(timeScale) << endl;
-	g_logoutFile << "duration: " << to_string(duration) << endl;
-	g_logoutFile << "rate: " << to_string(rate) << endl;
-	g_logoutFile << "volume: " << to_string(volume) << endl;
-	g_logoutFile << "matrix: ";
-	for (int idx = 0; idx < 9; idx++)
+	if (g_mp4Config.mp4Configlevel > 0)
 	{
-		g_logoutFile << to_string(matrix[idx]) << " ";
+		g_logoutFile << "creationTime: " << to_string(creationTime) << endl;
+		g_logoutFile << "modificationTime: " << to_string(modificationTime) << endl;
+		g_logoutFile << "timeScale: " << to_string(timeScale) << endl;
+		g_logoutFile << "duration: " << to_string(duration) << endl;
+		g_logoutFile << "rate: " << to_string(rate) << endl;
+		g_logoutFile << "volume: " << to_string(volume) << endl;
+		g_logoutFile << "matrix: ";
+		for (int idx = 0; idx < 9; idx++)
+		{
+			g_logoutFile << to_string(matrix[idx]) << " ";
+		}
+		g_logoutFile << endl;
+		g_logoutFile << "nextTrackID: " << to_string(nextTrackID) << endl;
 	}
-	g_logoutFile << endl;
-	g_logoutFile << "nextTrackID: " << to_string(nextTrackID) << endl;
+	
 #endif
 }
 
+// mdhd box...
 int MediaHeaderBox::Get_media_header(UINT64 &bytePosition)
 {
 	int err = 0;
@@ -302,11 +313,14 @@ void MediaHeaderBox::Dump_media_header_info()
 	cout << "duration: " << to_string(duration) << endl;
 	cout << "language: " << to_string(languageCode) << endl;
 #if DUMP_MP4_INFO_ENABLED_LOG
-	g_logoutFile << "creationTime: " << to_string(creationTime) << endl;
-	g_logoutFile << "modificationTime: " << to_string(modificationTime) << endl;
-	g_logoutFile << "timeScale: " << to_string(timeScale) << endl;
-	g_logoutFile << "duration: " << to_string(duration) << endl;
-	g_logoutFile << "language: " << to_string(languageCode) << endl;
+	if (g_mp4Config.mp4Configlevel > 0)
+	{
+		g_logoutFile << "creationTime: " << to_string(creationTime) << endl;
+		g_logoutFile << "modificationTime: " << to_string(modificationTime) << endl;
+		g_logoutFile << "timeScale: " << to_string(timeScale) << endl;
+		g_logoutFile << "duration: " << to_string(duration) << endl;
+		g_logoutFile << "language: " << to_string(languageCode) << endl;
+	}
 #endif
 }
 
@@ -340,8 +354,11 @@ void Handlerbox::Dump_handler_box_info()
 	cout << "name: " << name << endl;
 
 #if DUMP_MP4_INFO_ENABLED_LOG
-	g_logoutFile << "handler_type: " << forcc << endl;
-	g_logoutFile << "name: " << name << endl;
+	if (g_mp4Config.mp4Configlevel > 0)
+	{
+		g_logoutFile << "handler_type: " << forcc << endl;
+		g_logoutFile << "name: " << name << endl;
+	}
 #endif
 }
 
@@ -365,8 +382,11 @@ void VideoMediaHeaderBox::Dump_video_media_header_info()
 	cout << "graphicsmode: " << to_string(graphicsmode) << endl;
 	cout << "opcolor: " << to_string(opcolor[0]) << " " << to_string(opcolor[1]) << " " << to_string(opcolor[2]) << endl;
 #if DUMP_MP4_INFO_ENABLED_LOG
-	g_logoutFile << "graphicsmode: " << to_string(graphicsmode) << endl;
-	g_logoutFile << "opcolor: " << to_string(opcolor[0]) << " " << to_string(opcolor[1]) << " " << to_string(opcolor[2]) << endl;
+	if (g_mp4Config.mp4Configlevel > 0)
+	{
+		g_logoutFile << "graphicsmode: " << to_string(graphicsmode) << endl;
+		g_logoutFile << "opcolor: " << to_string(opcolor[0]) << " " << to_string(opcolor[1]) << " " << to_string(opcolor[2]) << endl;
+	}
 #endif
 }
 
@@ -389,7 +409,10 @@ void SoundMediaHeaderBox::Dump_audio_media_header_info()
 {
 	cout << "balance: " << to_string(balance) << endl;
 #if DUMP_MP4_INFO_ENABLED_LOG
-	g_logoutFile << "balance: " << to_string(balance) << endl;
+	if (g_mp4Config.mp4Configlevel > 0)
+	{
+		g_logoutFile << "balance: " << to_string(balance) << endl;
+	}
 #endif
 }
 
@@ -414,7 +437,10 @@ void DataReferenceBox::Dump_data_ref_info()
 {
 	cout << "entry_count: " << to_string(entryCount) << endl;
 #if DUMP_MP4_INFO_ENABLED_LOG
-	g_logoutFile << "entry_count: " << to_string(entryCount) << endl;
+	if (g_mp4Config.mp4Configlevel > 0)
+	{
+		g_logoutFile << "entry_count: " << to_string(entryCount) << endl;
+	}
 #endif
 }
 
@@ -460,7 +486,10 @@ void SampleDescriptionBox::Dump_sample_description_info()
 {
 	cout << "entry_count: " << to_string(entryCount) << endl;
 #if DUMP_MP4_INFO_ENABLED_LOG
-	g_logoutFile << "entry_count: " << to_string(entryCount) << endl;
+	if (g_mp4Config.mp4Configlevel > 0)
+	{
+		g_logoutFile << "entry_count: " << to_string(entryCount) << endl;
+	}
 #endif
 }
 
@@ -492,11 +521,14 @@ void TimeToSampleBox::Dump_time_to_sample_info()
 {
 	cout << "entry_count: " << to_string(entryCount) << endl;
 #if DUMP_MP4_INFO_ENABLED_LOG
-	g_logoutFile << "entry_count: " << to_string(entryCount) << endl;
-	for (int idx = 0; idx < entryCount; idx++)
+	if (g_mp4Config.mp4Configlevel > 0)
 	{
-		g_logoutFile << to_string(idx) << "\t";
-		g_logoutFile << "sample_count: " << to_string(pSampleCount[idx]) << "	sample_delta: " << to_string(pSampleDelta[idx]) << endl;
+		g_logoutFile << "entry_count: " << to_string(entryCount) << endl;
+		for (int idx = 0; idx < entryCount; idx++)
+		{
+			g_logoutFile << to_string(idx) << "\t";
+			g_logoutFile << "sample_count: " << to_string(pSampleCount[idx]) << "	sample_delta: " << to_string(pSampleDelta[idx]) << endl;
+		}
 	}
 #endif
 }
@@ -526,11 +558,14 @@ void SyncSampleBox::Dump_sync_sample_info()
 {
 	cout << "entry_count: " << to_string(entryCount) << endl;
 #if DUMP_MP4_INFO_ENABLED_LOG
-	g_logoutFile << "entry_count: " << to_string(entryCount) << endl;
-	for (int idx = 0; idx < entryCount; idx++)
+	if (g_mp4Config.mp4Configlevel)
 	{
-		g_logoutFile << to_string(idx) << "\t";
-		g_logoutFile << "sample_number: " << to_string(pSampleNumber[idx]) << endl;
+		g_logoutFile << "entry_count: " << to_string(entryCount) << endl;
+		for (int idx = 0; idx < entryCount; idx++)
+		{
+			g_logoutFile << to_string(idx) << "\t";
+			g_logoutFile << "sample_number: " << to_string(pSampleNumber[idx]) << endl;
+		}
 	}
 #endif
 }
@@ -562,11 +597,14 @@ void CompositionOffsetBox::Dump_composition_offset_info()
 {
 	cout << "entry_count: " << to_string(entryCount) << endl;
 #if DUMP_MP4_INFO_ENABLED_LOG
-	g_logoutFile << "entry_count: " << to_string(entryCount) << endl;
-	for (int idx = 0; idx < entryCount; idx++)
+	if (g_mp4Config.mp4Configlevel > 0)
 	{
-		g_logoutFile << to_string(idx) << "\t";
-		g_logoutFile << "sample_count: " << to_string(pSampleCount[idx]) << "	sample_offset: " << to_string(pSampleOffset[idx]) << endl;
+		g_logoutFile << "entry_count: " << to_string(entryCount) << endl;
+		for (int idx = 0; idx < entryCount; idx++)
+		{
+			g_logoutFile << to_string(idx) << "\t";
+			g_logoutFile << "sample_count: " << to_string(pSampleCount[idx]) << "	sample_offset: " << to_string(pSampleOffset[idx]) << endl;
+		}
 	}
 #endif
 }
@@ -601,11 +639,14 @@ void SampleToChunkBox::Dump_sample_to_chunk_info()
 {
 	cout << "entry_count: " << to_string(entryCount) << endl;
 #if DUMP_MP4_INFO_ENABLED_LOG
-	g_logoutFile << "entry_count: " << to_string(entryCount) << endl;
-	for (int idx = 0; idx < entryCount; idx++)
+	if (g_mp4Config.mp4Configlevel > 0)
 	{
-		g_logoutFile << to_string(idx) << "\t";
-		g_logoutFile << "first_chunk: " << to_string(pFirstChunk[idx]) << "	samples_per_chunk: " << to_string(pSamplesPerChunk[idx])<< "	sample_description_index: " << to_string(pSampleDiscriptionIdx[idx]) << endl;
+		g_logoutFile << "entry_count: " << to_string(entryCount) << endl;
+		for (int idx = 0; idx < entryCount; idx++)
+		{
+			g_logoutFile << to_string(idx) << "\t";
+			g_logoutFile << "first_chunk: " << to_string(pFirstChunk[idx]) << "	samples_per_chunk: " << to_string(pSamplesPerChunk[idx]) << "	sample_description_index: " << to_string(pSampleDiscriptionIdx[idx]) << endl;
+		}
 	}
 #endif
 }
@@ -641,14 +682,17 @@ void SampleSizeBox::Dump_sample_size_info()
 	cout << "sample_size: " << to_string(sampleSize) << endl;
 	cout << "sample_count: " << to_string(sampleCount) << endl;
 #if DUMP_MP4_INFO_ENABLED_LOG
-	g_logoutFile << "sample_size: " << to_string(sampleSize) << endl;
-	g_logoutFile << "sample_count: " << to_string(sampleCount) << endl;
-	if (sampleSize == 0)
+	if (g_mp4Config.mp4Configlevel > 0)
 	{
-		for (int idx = 0; idx < sampleCount; idx++)
+		g_logoutFile << "sample_size: " << to_string(sampleSize) << endl;
+		g_logoutFile << "sample_count: " << to_string(sampleCount) << endl;
+		if (sampleSize == 0)
 		{
-			g_logoutFile << to_string(idx) << "\t";
-			g_logoutFile << "entry_size: " << to_string(pEntrySize[idx]) << endl;
+			for (int idx = 0; idx < sampleCount; idx++)
+			{
+				g_logoutFile << to_string(idx) << "\t";
+				g_logoutFile << "entry_size: " << to_string(pEntrySize[idx]) << endl;
+			}
 		}
 	}
 #endif
@@ -679,11 +723,14 @@ void ChunkOffsetBox::Dump_chunk_offset_info()
 {
 	cout << "entry_count: " << to_string(entryCount) << endl;
 #if DUMP_MP4_INFO_ENABLED_LOG
-	g_logoutFile << "entry_count: " << to_string(entryCount) << endl;
-	for (int idx = 0; idx < entryCount; idx++)
+	if (g_mp4Config.mp4Configlevel > 0)
 	{
-		g_logoutFile << to_string(idx) << "\t";
-		g_logoutFile << "chunk_offset: " << to_string(pChunkOffset[idx]) << endl;
+		g_logoutFile << "entry_count: " << to_string(entryCount) << endl;
+		for (int idx = 0; idx < entryCount; idx++)
+		{
+			g_logoutFile << to_string(idx) << "\t";
+			g_logoutFile << "chunk_offset: " << to_string(pChunkOffset[idx]) << endl;
+		}
 	}
 #endif
 }
@@ -697,9 +744,7 @@ int SampleTableBox::Get_sample_table(UINT64 &bytePosition)
 		return err;
 	}
 	Dump_box_info();
-
-	g_sampleInfoFile << "********************Sample Table*******************" << endl;
-	
+		
 	if (Fourcc_compare(boxBuffer + usedBytesLength + 4, "stsd"))
 	{
 		stsdBox = new SampleDescriptionBox(boxBuffer + usedBytesLength);
@@ -749,7 +794,10 @@ int SampleTableBox::Get_sample_table(UINT64 &bytePosition)
 		stcoBox->Dump_chunk_offset_info();
 	}
 
-	Calculate_sample_info();
+	if (g_mp4Config.mp4Configlevel > 1)
+	{
+		Calculate_sample_info();
+	}
 	bytePosition += size;
 	return kMP4ParserError_NoError;
 }
@@ -858,6 +906,8 @@ void SampleTableBox::Calculate_sample_info()
 
 	// log out...
 	{
+		g_sampleInfoFile << "********************Sample Table*******************" << endl;
+
 		for (int idx = 0; idx < sampleCount; idx++)
 		{
 			g_sampleInfoFile << "Sample " << to_string(sampleInfoArr[idx].sampleIndex) << "";
@@ -1048,21 +1098,24 @@ void TrackHeaderBox::Dump_track_header_info()
 	cout << "height: " << to_string(height) << endl;
 
 #if DUMP_MP4_INFO_ENABLED_LOG
-	g_logoutFile << "creationTime: " << to_string(creationTime) << endl;
-	g_logoutFile << "modificationTime: " << to_string(modificationTime) << endl;
-	g_logoutFile << "trackID: " << to_string(trackID) << endl;
-	g_logoutFile << "duration: " << to_string(duration) << endl;
-	g_logoutFile << "layer: " << to_string(layer) << endl;
-	g_logoutFile << "alternateGroup: " << to_string(alternateGroup) << endl;
-	g_logoutFile << "volume: " << to_string(volume) << endl;
-	g_logoutFile << "matrix: ";
-	for (int idx = 0; idx < 9; idx++)
+	if (g_mp4Config.mp4Configlevel > 0)
 	{
-		g_logoutFile << to_string(matrix[idx]) << " ";
+		g_logoutFile << "creationTime: " << to_string(creationTime) << endl;
+		g_logoutFile << "modificationTime: " << to_string(modificationTime) << endl;
+		g_logoutFile << "trackID: " << to_string(trackID) << endl;
+		g_logoutFile << "duration: " << to_string(duration) << endl;
+		g_logoutFile << "layer: " << to_string(layer) << endl;
+		g_logoutFile << "alternateGroup: " << to_string(alternateGroup) << endl;
+		g_logoutFile << "volume: " << to_string(volume) << endl;
+		g_logoutFile << "matrix: ";
+		for (int idx = 0; idx < 9; idx++)
+		{
+			g_logoutFile << to_string(matrix[idx]) << " ";
+		}
+		g_logoutFile << endl;
+		g_logoutFile << "width: " << to_string(width) << endl;
+		g_logoutFile << "height: " << to_string(height) << endl;
 	}
-	g_logoutFile << endl;
-	g_logoutFile << "width: " << to_string(width) << endl;
-	g_logoutFile << "height: " << to_string(height) << endl;
 #endif
 }
 
@@ -1096,6 +1149,7 @@ int EditListBox::Get_edit_list_box(UINT64 &bytePosition)
 	{
 		return err;
 	}
+	Dump_full_box_info();
 
 	entryCnt = Get_lsb_uint32_value(boxBuffer, usedBytesLength);
 
@@ -1127,8 +1181,6 @@ int EditListBox::Get_edit_list_box(UINT64 &bytePosition)
 
 void EditListBox::Dump_edit_list_info()
 {
-	Dump_box_info();
-
 	cout << "entry_count: " << to_string(entryCnt) << endl;
 	for (int idx = 0; idx < entryCnt; idx++)
 	{
@@ -1139,13 +1191,16 @@ void EditListBox::Dump_edit_list_info()
 	}
 
 #if DUMP_MP4_INFO_ENABLED_LOG
-	g_logoutFile << "entry_count: " << to_string(entryCnt) << endl;
-	for (int idx = 0; idx < entryCnt; idx++)
+	if (g_mp4Config.mp4Configlevel > 0)
 	{
-		g_logoutFile << "segment_duration " << to_string(idx) << ": " << to_string(segmentDuration[idx]) << endl;
-		g_logoutFile << "media_time " << to_string(idx) << ": " << to_string(mediaTime[idx]) << endl;
-		g_logoutFile << "media_rate_integer " << to_string(idx) << ": " << to_string(mediaRateInteger[idx]) << endl;
-		g_logoutFile << "media_rate_fraction " << to_string(idx) << ": " << to_string(mediaRateFraction[idx]) << endl;
+		g_logoutFile << "entry_count: " << to_string(entryCnt) << endl;
+		for (int idx = 0; idx < entryCnt; idx++)
+		{
+			g_logoutFile << "segment_duration " << to_string(idx) << ": " << to_string(segmentDuration[idx]) << endl;
+			g_logoutFile << "media_time " << to_string(idx) << ": " << to_string(mediaTime[idx]) << endl;
+			g_logoutFile << "media_rate_integer " << to_string(idx) << ": " << to_string(mediaRateInteger[idx]) << endl;
+			g_logoutFile << "media_rate_fraction " << to_string(idx) << ": " << to_string(mediaRateFraction[idx]) << endl;
+		}
 	}
 #endif
 }

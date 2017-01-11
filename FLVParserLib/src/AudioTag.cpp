@@ -57,7 +57,7 @@ void CAudioTag::Dump_audio_tag_info()
 #if DUMP_TAG_INFO_ENABLED_LOG
 
 #if DUMP_AUDIO_TAG_INFO_ENABLED_LOG
-	if (g_config.flvLogLevel >= 1)
+	if (g_flvConfig.flvLogLevel >= 1)
 	{
 		int soundRateArr[4] = { 5500, 11000, 22000, 44000 };
 		g_logoutFile << "Sound Format: " << to_string(m_soundFormat) << endl;
@@ -70,7 +70,7 @@ void CAudioTag::Dump_audio_tag_info()
 		}
 	}
 
-	if (g_config.flvLogLevel == 2)
+	if (g_flvConfig.flvLogLevel == 2)
 	{
 		if (m_audioSpecCfg)
 		{
