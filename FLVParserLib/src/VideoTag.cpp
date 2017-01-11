@@ -83,7 +83,7 @@ void CVideoTag::Dump_video_tag_info()
 #if DUMP_VIDEO_TAG_INFO_ENABLED_LOG
 	if (g_flvConfig.flvLogLevel >= 1)
 	{
-		g_logoutFile << "Frame Type: " << to_string(m_frameType) << endl;
+		g_logoutFile << "Frame Type: " << (m_frameType == 1 ? "Key Frame" : "Inter Frame") << endl;
 		g_logoutFile << "Codec ID: " << to_string(m_codecID) << endl;
 		g_logoutFile << "AVCPacketType: " << to_string(m_AVCPacketType) << endl;
 		g_logoutFile << "CompositionTime: " << to_string(m_CompositionTime) << endl;
@@ -158,12 +158,21 @@ int CVideoTag::parse_nal_units()
 void CVideoTag::dump_nal_units_info()
 {
 	NALUnit *unit = m_nalu;
+	const char *sliceTypeString[5] = 
+	{
+		"P Slice",
+		"B Slice",
+		"I Slice",
+		"SP Slice",
+		"SI Slice"
+	};
+
 	while (unit)
 	{
 		g_logoutFile << "NAL Unit Type: " << to_string(unit->nalType) << endl;
 		if (unit->nalType == 5 || unit->nalType == 1)
 		{
-			g_logoutFile << "Slice Type: " << to_string(unit->sliceType) << endl;
+			g_logoutFile << "Slice Type: " << sliceTypeString[unit->sliceType % 5] << endl;
 		}
 		unit = unit->nextNalu;
 	}
