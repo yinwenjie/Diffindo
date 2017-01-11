@@ -26,7 +26,7 @@ CFlvParser::CFlvParser(const char *fileName)
 	m_flvBody = NULL;
 
 #if DUMP_TAG_INFO_ENABLED_LOG
-	g_logoutFile.open("log.txt");
+	g_logoutFile.open(g_flvConfig.outputName);
 #endif
 
 }
