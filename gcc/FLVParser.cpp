@@ -2,9 +2,16 @@
 
 int main(int argc, char **argv)
 {
-if (argc == 3)
+	if (argc == 4)
 	{
-		g_config.flvLogLevel = atoi(argv[2]);
+		g_flvConfig.inputName = argv[1];
+		g_flvConfig.outputName = argv[2];
+		g_flvConfig.flvLogLevel = atoi(argv[3]);
+	}
+	else if (argc == 3)
+	{
+		g_flvConfig.inputName = argv[1];
+		g_flvConfig.outputName = argv[2];
 	}
 
 	int err = 0;

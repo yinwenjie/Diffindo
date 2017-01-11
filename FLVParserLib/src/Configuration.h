@@ -22,9 +22,13 @@
 typedef struct FLVRuntimeConfiguration
 {
 	UINT8 flvLogLevel;		// 0:Flv tag;	1:Video/Audio tag;	2:Video/Audio payload
+	char *inputName;
+	char *outputName;
 	FLVRuntimeConfiguration()
 	{
 		flvLogLevel = 0;
+		inputName = NULL;
+		outputName = NULL;
 	}
 } FLVRuntimeConfiguration;
 
