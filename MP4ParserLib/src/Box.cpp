@@ -1204,3 +1204,18 @@ void EditListBox::Dump_edit_list_info()
 	}
 #endif
 }
+
+
+int MediaDataBox::Get_mdat_box(UINT64 &bytePosition)
+{
+	int err = 0;
+	err = Get_box_struct();
+	if (err < 0)
+	{
+		return err;
+	}
+	Dump_box_info();
+
+	bytePosition += size;
+	return kMP4ParserError_NoError;
+}

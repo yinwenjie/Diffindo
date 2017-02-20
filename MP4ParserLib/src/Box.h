@@ -734,4 +734,11 @@ typedef struct MovieBox : public Box
 	int Get_movie_box(UINT64 &bytePosition);
 } MovieBox;
 
+typedef struct MediaDataBox : public Box
+{
+	MediaDataBox(BYTE *buf) : Box(buf)
+	{}
+	int Get_mdat_box(UINT64 &bytePosition);
+};
+
 #endif

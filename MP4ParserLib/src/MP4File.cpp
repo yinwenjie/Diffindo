@@ -9,6 +9,7 @@ CMP4File::CMP4File(BYTE *fileBuffer)
 	m_fileBytePosition = 0;
 	ftypBox = NULL;
 	moovBox = NULL;
+	mdatBox = NULL;
 }
 
 CMP4File::~CMP4File()
@@ -17,6 +18,16 @@ CMP4File::~CMP4File()
 	{
 		delete ftypBox;
 		ftypBox = NULL;
+	}
+	if (moovBox)
+	{
+		delete moovBox;
+		moovBox = NULL;
+	}
+	if (mdatBox)
+	{
+		delete mdatBox;
+		mdatBox = NULL;
 	}
 }
 
@@ -29,6 +40,12 @@ int CMP4File::Parse()
 	}
 
 	err = get_movie_box();
+	if (err < 0)
+	{
+		return err;
+	}
+
+	err = get_mdat_box();
 	if (err < 0)
 	{
 		return err;
@@ -69,5 +86,15 @@ int CMP4File::get_movie_box()
 		m_fileBytePosition += (freeboxSize - 4);
 	}
 
+	return kMP4ParserError_NoError;
+}
+
+int CMP4File::get_mdat_box()
+{
+	if (Fourcc_compare(m_fileBuffer + m_fileBytePosition + 4, "mdat"))
+	{
+		mdatBox = new MediaDataBox(m_fileBuffer + m_fileBytePosition);
+		mdatBox->Get_mdat_box(m_fileBytePosition);
+	}
 	return kMP4ParserError_NoError;
 }

@@ -12,6 +12,7 @@ public:
 
 	FileTypeBox *ftypBox;
 	MovieBox    *moovBox;
+	MediaDataBox *mdatBox;
 
 	int Parse();
 
@@ -21,6 +22,7 @@ private:
 
 	int   get_file_type_box();
 	int   get_movie_box();
+	int   get_mdat_box();
 };
 
 
