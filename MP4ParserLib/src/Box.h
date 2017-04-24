@@ -32,6 +32,7 @@ typedef struct Box
 		memset(userType, 0, 16 * sizeof(UINT8));
 	}
 	int Get_box_struct();
+	int Parse_box_recursively();
 	void Dump_box_info();
 }Box;
 

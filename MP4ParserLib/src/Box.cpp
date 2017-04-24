@@ -17,6 +17,28 @@ int Box::Get_box_struct()
 	return kMP4ParserError_NoError;
 }
 
+int Box::Parse_box_recursively()
+{
+	int err = 0;
+	err = Get_box_struct();
+	if (err < 0)
+	{
+		return err;
+	}
+
+	int offset = 8;
+	while (offset < size)
+	{
+		Box *thisBox = new Box(boxBuffer + offset);
+		thisBox->Parse_box_recursively();
+
+		offset += thisBox->size;
+		delete thisBox;
+	}
+
+	return kMP4ParserError_NoError;
+}
+
 void Box::Dump_box_info()
 {
 	char forcc[5] = { 0 };

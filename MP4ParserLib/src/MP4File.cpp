@@ -3,10 +3,11 @@
 
 using namespace std;
 
-CMP4File::CMP4File(BYTE *fileBuffer)
+CMP4File::CMP4File(BYTE *fileBuffer, UINT64 fileSize)
 {
 	m_fileBuffer = fileBuffer;
 	m_fileBytePosition = 0;
+	m_fileSize = fileSize;
 	ftypBox = NULL;
 	moovBox = NULL;
 	mdatBox = NULL;
@@ -33,6 +34,10 @@ CMP4File::~CMP4File()
 
 int CMP4File::Parse()
 {
+	loop_all_boxes();
+	
+	return kMP4ParserError_NoError;
+
 	int err = get_file_type_box();
 	if (err < 0 )	
 	{
@@ -51,6 +56,22 @@ int CMP4File::Parse()
 		return err;
 	}
 
+	return kMP4ParserError_NoError;
+}
+
+int CMP4File::loop_all_boxes()
+{
+	UINT64 offset = 0;
+
+	while (offset < m_fileSize)
+	{
+		Box *thisBox = new Box(m_fileBuffer + offset);
+		thisBox->Parse_box_recursively();
+
+		offset += thisBox->size;
+		delete thisBox;
+	}
+	
 	return kMP4ParserError_NoError;
 }
 

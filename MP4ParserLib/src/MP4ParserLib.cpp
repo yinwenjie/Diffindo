@@ -42,7 +42,7 @@ int CMP4Parser::Parse()
 	}
 	dump_mp4_file_info();
 
-	m_MP4File = new CMP4File(m_fileBuf);
+	m_MP4File = new CMP4File(m_fileBuf, m_fileSize);
 	m_MP4File->Parse();
 
 	close_input_file();

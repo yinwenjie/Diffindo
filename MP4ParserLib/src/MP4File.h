@@ -7,7 +7,7 @@
 class CMP4File
 {
 public:
-	CMP4File(BYTE *fileBuffer);
+	CMP4File(BYTE *fileBuffer, UINT64 fileSize);
 	~CMP4File();
 
 	FileTypeBox *ftypBox;
@@ -19,6 +19,9 @@ public:
 private:
 	BYTE  *m_fileBuffer;
 	UINT64 m_fileBytePosition;
+	UINT64 m_fileSize;
+
+	int   loop_all_boxes();
 
 	int   get_file_type_box();
 	int   get_movie_box();
