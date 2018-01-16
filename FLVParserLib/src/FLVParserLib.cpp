@@ -347,6 +347,30 @@ int CFlvWriter::Clone_with_accelerating_factor(double factor)
 	return kFlvParserError_NoError;
 }
 
+int CFlvWriter::Clone_with_new_flv_timestamp_array(double *videoTS, long videoTSLength, double *audioTS, long audioTSLength)
+{
+	long videoIdx = 0, audioIdx = 0;
+	bool editVideo = (videoTSLength != 0) && videoTS, editAudio = (audioTSLength != 0) && audioTS;
+
+	CFlvTag *tag = m_parser->m_flvBody->Get_first_tag();
+	while (tag)
+	{
+		if (editAudio && (tag->m_tagType == TAG_TYPE_AUDIO) && (audioIdx < audioTSLength))
+		{
+			tag->m_timeStamp = (UINT32)(audioTS[audioIdx++] * 1000);			
+		}
+		if (editVideo && (tag->m_tagType == TAG_TYPE_VIDEO) && (videoIdx < videoTSLength))
+		{
+			tag->m_timeStamp = (UINT32)(videoTS[videoIdx++] * 1000);
+		}
+
+		write_tag(tag);
+
+		tag = tag->m_nextTag;
+	}
+	return kFlvParserError_NoError;
+}
+
 int CFlvWriter::Extract_H264_raw_stream()
 {
 	m_outputH264Stream.open(m_outputFileName, ios_base::binary);

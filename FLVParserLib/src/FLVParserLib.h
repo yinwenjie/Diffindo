@@ -83,6 +83,7 @@ public:
 	int Clone_with_tag_index_range(UINT32 startIdx, UINT32 endIdx);
 	int Clone_with_tag_time_stamp_range(UINT32 startTS, UINT32 endTS);
 	int Clone_with_accelerating_factor(double factor);
+	int Clone_with_new_flv_timestamp_array(double *videoTS, long videoTSLength, double *audioTS, long audioTSLength);
 	int Extract_H264_raw_stream();
 
 private:
